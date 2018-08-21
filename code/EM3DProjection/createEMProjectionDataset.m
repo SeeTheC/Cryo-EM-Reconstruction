@@ -67,7 +67,7 @@ end
 plotImg(em,'Dim','Z');
 %% Projection
 % define projection angles (in radians)
-noOfAngles=700;
+noOfAngles=100;
 isRand=true;
 anglesX=linspace(0,2*pi,360*2);
 randX=randi([1 360*2],1,noOfAngles);
@@ -81,7 +81,12 @@ if isRand
 else
     angles=[anglesX;anglesY;anglesZ];   
 end
-    % take projection
+%x=[0,0,0,0,pi/2,pi/2];
+%y=[0,pi/2,pi/2 0,pi/2,pi/2];
+%z=[0,0,pi/2,pi/2,0,pi/2];
+%angles=[x;y;z];   
+
+% take projection
 fprintf('Taking projection...\n');
 tic
 projections=Ax(em,geo,angles,'interpolated');
@@ -89,8 +94,23 @@ toc
 fprintf('Done\n');
 % Plot Projections
 fprintf('Ploting Projection...\n');
-%plotProj(projections,angles,'Savegif','pro_100_anglesXYZ_rand.gif')
+plotProj(projections,angles,'Savegif','pro_anglesXYZ11_rand.gif')
 fprintf('Done\n');
+%% Projection
+clear F;
+frameNo=1;
+N=size(projections,3);
+fig3=figure('units','normalized','outerposition',[0 0 1 1]);
+pause(2);
+%minClrVal=min(rescons);maxClrVal=max(rescons);
+for i=1:N          
+    imshow(projections(:,:,i),[]);
+    tstr=sprintf('\\fontsize{14}{\\color{black}Projection:%d/%d}',i,N);
+    title(tstr);        
+    pause(1);
+    F(frameNo)=getframe(fig3);frameNo=frameNo+1;
+end
+
 %% Reconstruct image using OS-SART and FDK
 tic
 fprintf('Reconstructing..\n');
@@ -162,11 +182,14 @@ for i=1:N
     F(frameNo)=getframe(fig2);frameNo=frameNo+1;
 end
 %% Record Video
-F2=[F1,F];
+%F2=[F1,F];
+F2=F;
 fprintf('Creating Video.\n');
 % create the video writer with 1 fps
-writerObj = VideoWriter('reconstruction_700_rand.avi');
-writerObj.FrameRate = 5;% set the seconds per image
+%writerObj = VideoWriter('reconstruction_700_rand.avi');
+writerObj = VideoWriter('proj_rand_100_1.avi');
+
+writerObj.FrameRate = 2;% set the seconds per image
 
 % open the video writer
 open(writerObj);
@@ -180,5 +203,4 @@ end
 close(writerObj);
 fprintf('Done.\n');
 
- 
  
