@@ -5,7 +5,7 @@
 % az: rotation about z-axis
 % https://en.wikipedia.org/wiki/Rotation_matrix
 % Clock-wise rotation
-function [rotationZYX] = rotationMatrix(az,ay,ax)
+function [rotationZYX] = rotationMatrix(ax,ay,az)
     % Rx: Roation about X-axis
     % Ry: Roation about Y-axis
     % Rz: Roation about Z-axis
@@ -14,6 +14,14 @@ function [rotationZYX] = rotationMatrix(az,ay,ax)
           0,     sin(az),    cos(az) ;...
        ];
    
+   %{
+   Rx=[  cos(az),    -sin(az),  0;...
+          sin(az),     cos(az),  0;...
+          0,           0,        1;...
+       ];
+   
+   %}
+       
     Ry=[  cos(ay),     0,    sin(ay);...
           0,           1,    0      ;...
           -sin(ay),    0,    cos(ay);...

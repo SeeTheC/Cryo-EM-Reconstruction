@@ -6,7 +6,7 @@
 % Dev: Khursheed Ali
 % Date: 16-09-2018
 function [result] = combination(n,beta)    
-    k=numel(beta,1);        
+    k=numel(beta);        
     % simple method
     r=factorial(n);
     for i=1:k

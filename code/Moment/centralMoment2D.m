@@ -6,6 +6,7 @@ function [moment_kl] = centralMoment2D(f,k,l)
     [Y,X] = meshgrid([1:H],[1:W]);
     % Center of Mass : cx,cy
     cx=ceil(H/2); cy=ceil(W/2);
+    %cx=0;cy=0;
     %% Cental Moment
     % Sigma.Sigma (x-cx)^k (y-cy)^l f(x,y);
     

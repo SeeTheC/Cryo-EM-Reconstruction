@@ -6,7 +6,7 @@
 
 % Dev: Khursheed Ali
 % Date: 16-09-2018
-function [beta] = genSigmRange(k,alpha)
+function [beta] = genSigmaRange(k,alpha)
     
     % 1. |β|=k
     b=gen3dOrderMoment(k);
