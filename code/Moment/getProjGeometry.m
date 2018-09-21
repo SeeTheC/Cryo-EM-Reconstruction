@@ -1,7 +1,13 @@
-function [geo] = getProjGeometry(objDim)
+function [geo,padding] = getProjGeometry(objDim)
     %%
-    dsize=ceil(sqrt(objDim(1)^2+objDim(2)^2+objDim(3)^2));
-    dsize=3;
+    dsize=ceil(sqrt(objDim(1)^2+objDim(2)^2+objDim(3)^2))+2;
+    padding=abs(objDim-dsize);
+    if(mod(padding(1),2)~=0)
+        padding=padding-1;
+        dsize=dsize-1;
+    end
+    objDim=objDim+padding;
+    %dsize=objDim(1);
     %% Config
     % VARIABLE                                   DESCRIPTION                    UNITS
     %-------------------------------------------------------------------------------------
@@ -12,6 +18,7 @@ function [geo] = getProjGeometry(objDim)
     geo.nDetector=[dsize; dsize];				% number of pixels              (px)
     geo.dDetector=[1; 1]; 					    % size of each pixel            (mm)
     geo.sDetector=geo.nDetector.*geo.dDetector; % total size of the detector    (mm)
+    
     % Image parameters
     geo.nVoxel=objDim;                          % number of voxels              (vx)
     geo.sVoxel=objDim;                          % total size of the image       (mm)
@@ -21,7 +28,7 @@ function [geo] = getProjGeometry(objDim)
     geo.offDetector=[0; 0];                     % Offset of Detector            (mm)
 
     % Auxiliary 
-    geo.accuracy=0.5;                           % Accuracy of FWD proj          (vx/sample)
+    geo.accuracy=0.001;                           % Accuracy of FWD proj          (vx/sample)
 
     % Projection Type : parallel/cone
     geo.mode='parallel';

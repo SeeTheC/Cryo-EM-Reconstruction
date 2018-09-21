@@ -11,45 +11,63 @@ funInitTIGRE();
 cd(callPath); 
 
 %% Init Object:
+%Object: 1
 O1(:,:,1)=[1,2,3;4,5,6;7,8,9];
 O1(:,:,2)=[1,2,3;4,5,6;7,8,9];
 O1(:,:,3)=[1,2,3;4,5,6;7,8,9];
 
-obj=single(O1);
-objSize=size(obj)';
-%% Take Projection
-geo=getProjGeometry(objSize)
-%potgeometry(geo,-pi); 
+%Object: 2
+O2=permute(O1,[3,2,1]);
 
+O3(:,:,1)=[1,2,3;4,5,6;7,8,9];
+O3(:,:,2)=[11,12,13;14,15,16;17,18,19];
+O3(:,:,3)=[21,22,23;24,25,26;27,28,29];
+
+
+obj1=single(O3);
+obj3d=permute(obj1,[3,2,1]);
+objSize=size(obj1)';
+
+%% Take Projection
+[geo,padding]=getProjGeometry(objSize)
+obj=padarray(obj1,padding./2);
+%potgeometry(geo,-pi); 
+%%
 % Angles
 x=[0,0,0,0,pi/2,pi/4];
-y=[0,pi/2,pi/2 0,pi/2,pi/4];
+y=[0,-pi/2,pi/2 0,pi/2,pi/4];
 z=[0,0,pi/2,pi/2,0,pi/4];
 angles=[x;y;z];
 
 % take projection
 fprintf('Taking projection...\n');
 tic
-projections=Ax(obj,geo,angles,'interpolated');
+projections=Ax(obj,geo,angles,'interpolated')
+%projections=Ax(obj,geo,angles);
 toc
 fprintf('Done\n');
 % Plot Projections
 fprintf('Ploting Projection...\n');
-plotProj(projections,angles,'Savegif','temp.gif')
+%plotProj(projections,angles,'Savegif','temp.gif')
 fprintf('Done\n');
 %% Verifying - Moment Eq15 
 % p(k,l) (i) = m(k,l,0) (fRi ) =  ∑ |α|=k+l a(Ri ; k, l; α) mα,
 % (2,0) & (2,1)
-
-k=0,l=1;
-f=projections(:,:,1);
-ax=0;ay=0;az=0;
+fprintf('-------------------------\n');
+projIdx=5;
+k=5;l=5;
+f=projections(:,:,projIdx);
+ax=angles(1,projIdx);ay=angles(2,projIdx);az=angles(3,projIdx);
+R=rotationMatrix(ax,ay,az);
 % Eq15 : Left Side
 Pkl=centralMoment2D(f,k,l);
+%mkl0=centralMoment3D(obj3d,k,l,0);
+%fprintf('P_kl:%f\t m_kl0:%f\n',Pkl,mkl0);
 
 % Eq15 : Right Side
 alpha=k+l;
-Ri=rotationMatrix(ax,ay,az);
+Ri=rotationMatrix(ax,ay-pi/2,az);
+%Ri=rotationMatrix(0,-pi/2,0);
 order=gen3dOrderMoment(alpha);
 rightSide=0;
 for i=1:size(order,1)    
@@ -59,7 +77,7 @@ for i=1:size(order,1)
     %fprintf('p:%d q:%d r:%d w:%f cm:%f\n',order(i,1),order(i,2),order(i,3),w,cm);    
     rightSide=rightSide+tmp;
 end
-fprintf('Pkl:%f rightSide:%f\n',Pkl,rightSide);
+fprintf('Pkl:%f\trightSide:%f\n',Pkl,rightSide);
 
 
 %%
