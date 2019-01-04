@@ -3,6 +3,8 @@
 % Return : 3 col matrix 
 % Example n=2; o.p (2,0,0),(1,1,0),(1,0,1),(0,1,1),(0,0,2)
 function [order] = gen3dOrderMoment(n)
+    %noOfOrder= nchoosek( n+2 , 2 );    
+    %order=zeors(noOfOrder,3);
     order=[];
     for i=n:-1:0        
         order2nd=gen2dOrderMoment(n-i);

@@ -5,6 +5,9 @@
 % az: rotation about z-axis
 % https://en.wikipedia.org/wiki/Rotation_matrix
 % Clock-wise rotation
+
+% Dev: Khursheed Ali
+% Date: 16-09-2018
 function [rotationZYX] = rotationMatrix(ax,ay,az)
     % Rx: Roation about X-axis
     % Ry: Roation about Y-axis

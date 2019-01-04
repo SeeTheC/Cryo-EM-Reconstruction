@@ -51,7 +51,7 @@ geo.accuracy=0.5;                           % Accuracy of FWD proj          (vx/
 
 % Projection Type : parallel/cone
 geo.mode='parallel';
-%plotgeometry(geo,-pi); 
+plotgeometry(geo,-pi); 
 %% Visualize Data
 %head=headPhantom(geo.nVoxel); %default is 128^3
 %head=em(geo.nVoxel); %default is 128^3
