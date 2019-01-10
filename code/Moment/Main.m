@@ -56,6 +56,8 @@ C = [0:range];
 R = [cc(:) bb(:) aa(:)] ;
 toc
 clear aa bb cc;
+%% TEST : COMMON LINE
+
 
 
 

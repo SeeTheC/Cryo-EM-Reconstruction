@@ -1,0 +1,141 @@
+%% Generate Sample projection from the 3D structure ans the projections
+%% INIT - Reading Data Set
+clear all;
+rng(1);
+server = 1
+if server
+    basepath='~/git/Cryp-EM/Cryo-EM-Reconstruction/code/data';
+else
+    basepath='/media/khursheed/4E20CD3920CD2933/MTP';  
+end
+% EMD 3D Projection -  Init
+addpath(genpath('../../lib/3dviewer'));
+addpath(genpath('../MapFileReader/'));
+callPath=pwd;
+cd('../../lib/CERN-TIGRE/MATLAB'); 
+funInitTIGRE();
+cd(callPath); 
+
+%% Config 1: Reading Emd virus
+ dataNum = 5689;
+ datasetName=num2str(dataNum);
+ datasetPath='~/git/Dataset/EM';
+ if(dataNum==1003)
+    emFile=strcat(datasetPath,'/EMD-1003','/map','/emd_1003.map'); 
+    em = mapReader(emFile);
+ end
+ if(dataNum==5693) 
+    emFile=strcat(datasetPath,'/EMD-5693','/map','/EMD-5693.map');
+    em = mapReader(emFile);
+ end
+  if(dataNum==5689) 
+    emFile=strcat(datasetPath,'/EMD-5689','/map','/EMD-5689.map');
+    em = mapReader(emFile);
+  end
+ em(em<0)=0;
+ emDim=size(em)'; 
+ fprintf('Dataset:%d Dim:%dx%dx%d\n',dataNum,emDim(1),emDim(2),emDim(3));
+  
+%% Config 2: Set Save Paths
+timestamp=datestr(now,'dd-mm-yyyy HH:MM:SS');
+saveParentPath=strcat(basepath,'/',datasetName);
+savepath=strcat(saveParentPath,'/Projection_',num2str(dataNum),'_',timestamp); 
+savedImgDir=strcat(savepath,'/img');
+savedRawImgDir=strcat(savepath,'/raw_img');
+
+
+% Creating dir
+mkdir(saveParentPath);
+mkdir(savepath);
+mkdir(savedImgDir);
+mkdir(savedRawImgDir);
+
+% creating a file
+fid = fopen(strcat(savepath,'/0_info.txt'), 'a+');
+fprintf(fid, 'img_no \t min_val \tmax_val \t ang_x \t ang_y \t ang_z \n');
+
+%% Taking Projection
+
+%% Define Geometry
+% 
+% VARIABLE                                   DESCRIPTION                    UNITS
+%-------------------------------------------------------------------------------------
+%geo.DSD = 1536;                             % Distance Source Detector     (mm)
+geo.DSD = 1000;                             % Distance Source Detector      (mm)
+geo.DSO = 500;                             % Distance Source Origin        (mm)
+% Detector parameters
+geo.nDetector=[256; 256];					% number of pixels              (px)
+geo.dDetector=[0.8; 0.8]; 					% size of each pixel            (mm)
+geo.sDetector=geo.nDetector.*geo.dDetector; % total size of the detector    (mm)
+% Image parameters
+geo.nVoxel=emDim;                           % number of voxels              (vx)
+geo.sVoxel=emDim;                           % total size of the image       (mm)
+geo.dVoxel=geo.sVoxel./geo.nVoxel;          % size of each voxel            (mm)
+% Offsets
+geo.offOrigin =[0;0;0];                     % Offset of image from origin   (mm)              
+geo.offDetector=[0; 0];                     % Offset of Detector            (mm)
+
+% Auxiliary 
+geo.accuracy=0.5;                           % Accuracy of FWD proj          (vx/sample)
+
+% Projection Type : parallel/cone
+geo.mode='parallel';
+plotgeometry(geo,-pi); 
+
+%% Projection
+% define projection angles (in radians)
+noOfAngles=5000;
+isRand=true;
+anglesX=linspace(0,2*pi,noOfAngles);
+anglesY=linspace(0,2*pi,noOfAngles);
+anglesZ=linspace(0,2*pi,noOfAngles);
+rng(1);
+if isRand
+    randian=pi/180;
+    angX=randi([0 359],1,noOfAngles).*randian;
+    angY=randi([0 359],1,noOfAngles).*randian;
+    angZ=randi([0 359],1,noOfAngles).*randian;
+    angles=[angX;angY;angZ]; 
+else
+    angles=[anglesX;anglesY;anglesZ];   
+end
+%x=[0,0,0,0,pi/2,pi/2];
+%y=[0,pi/2,pi/2 0,pi/2,pi/2];
+%z=[0,0,pi/2,pi/2,0,pi/2];
+%angles=[x;y;z];   
+
+%% Take projection
+fprintf('Taking projection...\n');
+tic
+projections=Ax(em,geo,angles,'interpolated');
+toc
+fprintf('Done\n');
+% Plot Projections
+fprintf('Ploting Projection...\n');
+%plotProj(projections,angles,'Savegif','pro_anglesXYZ11_rand.gif')
+fprintf('Done\n');
+%% Save Projection
+N=size(projections,3);
+fprintf('Saving total Projections: %d ...\n',N);
+%fig3=figure('units','normalized','outerposition',[0 0 1 1]);
+for i=1:N          
+    img=projections(:,:,i);
+    %imshow(img,[]);
+    % saving raw img
+    save(strcat(savedRawImgDir,'/',num2str(i),'.mat'),'img');    
+    maxValue=max(img(:)); 
+    minValue=min(img(:)); 
+    img=img-minValue;
+    %Saving img
+    imwrite(img./maxValue,strcat(savedImgDir,'/',num2str(i),'.jpg'));
+    % writing to file
+    fprintf(fid, '%d \t %f \t %f \t %f \t %f \t %f \n',i,minValue, maxValue,angles(1,i),angles(2,i),angles(3,i));
+    
+end
+fprintf('Done\n');
+%%
+fclose(fid);
+
+
+
+ 
