@@ -78,7 +78,7 @@ toc
 %% 
 [phi] = getPhi(gproj1D);
 %%
-if exist(tmpPhiPath, 'file') == 1
+if exist(tmpPhiPath, 'file') == 2
     fprintf('Fast load: Loading phi from temporary storage...\n'); 
     phi=load(tmpPhiPath,'phi');
     phi=phi.phi;
@@ -116,7 +116,113 @@ n=size(p1,2);
 %c2=c1(:,:,1)./n;
 toc
 
+%% TESTING: FIND C
+[C1,C2] = findC(phi);
 
+%%
+D1=normc(C1');D2=normc(C2');
 
+%D1=C1';D2=C2';
+
+dr=(180/pi);
+
+Q=getRotMtx(D2(:,1),D1(:,1))
+
+D3=Q*D2;
+
+v1=normc(cross(D1(:,1),D1(:,2)))
+v2=normc(cross(D3(:,1),D3(:,2)))
+
+%v1=acos(normc(cross(D1(:,1),D1(:,2)))).*dr
+%v2=acos(normc(cross(D3(:,1),D3(:,2)))).*dr
+
+%% Example
+%plane 1: YZ
+%plane 2: XY
+%plane 3: ZX
+%plane 4: ZX with 45. with XY.
+
+A=[0,0,1;1,0,0;0,1,0]; A=A';
+B=[0,0,1;1,1/sqrt(2),0;0,1/sqrt(2),0]; B=B';
+phiAB=[0,0,90,45;
+       0,0,270,270;
+       90,180,0,180;
+       0,180,180,0];
+   
+M1 = A*A';
+[U,S1,V]=svds(M1);
+C1=U*(S1^0.5);
+
+M2 = B*B';
+[U2,S2,V2]=svds(M2);
+C2=U2*(S2^0.5);
+
+%% 
+D1=normc(C1');D2=normc(C2');
+
+dr=(180/pi);
+
+Q=getRotMtx(D1(:,1),D2(:,1))
+
+D3=Q'*D2;
+
+v1=normc(cross(D1(:,1),D1(:,2)))
+v2=normc(cross(D3(:,1),D3(:,2)))
+
+%%
+C11=normc(C1');C22=normc(C2');
+
+dr=(180/pi);
+
+D11=normc(cross(C11(:,1),C11(:,2)))
+D12=normc(cross(C11(:,1),C11(:,3)))
+
+D21=normc(cross(C22(:,1),C22(:,2)))
+D22=normc(cross(C22(:,1),C22(:,3)))
+
+% aplha_12 angle between  plane 1 and 2
+% aplha_12_1 should be equal to aplha_12_2
+aplha_12_1 = acos(dot(D11,D12))*dr
+aplha_12_2 = acos(dot(D21,D22))*dr
+
+%% Example 
+O(:,:,1)=[1,2,3;4,5,6;7,8,9]
+O(:,:,2)=[10,11,12;13,14,15;16,17,18]
+O(:,:,3)=[19,20,21;22,23,24;25,26,27]
+
+%plane 1: YZ
+p1=[0,0,0,0,0;
+    0,O(1,:,1)+O(1,:,2)+O(1,:,3),0;
+    0,O(2,:,1)+O(2,:,2)+O(2,:,3),0;
+    0,O(3,:,1)+O(3,:,2)+O(3,:,3),0;
+    0,0,0,0,0;]
+
+%plane 2: XY
+p2=[0,0,0,0,0;
+    0,squeeze(O(1,1,:)+O(2,1,:)+O(3,1,:))',0;
+    0,squeeze(O(1,2,:)+O(2,2,:)+O(3,2,:))',0;
+    0,squeeze(O(1,3,:)+O(2,3,:)+O(3,3,:))',0;
+    0,0,0,0,0;]
+%plane 3: ZX
+p3=[0,0,0,0,0;
+    0,squeeze(O(1,1,:)+O(1,2,:)+O(1,3,:))',0;
+    0,squeeze(O(2,1,:)+O(2,2,:)+O(2,3,:))',0;
+    0,squeeze(O(3,1,:)+O(3,2,:)+O(3,3,:))',0;
+    0,0,0,0,0;
+    ]
+
+p4=[0,7,16,25,0;
+    0,12,30,18,0;
+    0,15,42,69,0;
+    0,8,26,44,0;
+    0,3,12,21,0;
+    ]
+
+P(:,:,1)=p1;P(:,:,2)=p2;P(:,:,3)=p3;P(:,:,4)=p4;
+
+[P1D] = get1DProjections(P);
+gP1D=gpuArray(P1D);
+[ex_phi,ex_error] = getPhi(gP1D);
+[C1,C2] = findC(ex_phi);
 
 
