@@ -4,6 +4,7 @@ clear all;
 addpath(genpath('../../lib/3dviewer'));
 addpath(genpath('../MapFileReader/'));
 addpath(genpath('../FileOperation'));
+addpath(genpath('../CommonFunctions'));
 addpath(genpath('CommonLine/'));
 callPath=pwd;
 cd('../../lib/CERN-TIGRE/MATLAB'); 
@@ -16,17 +17,51 @@ else
     basepath='/media/khursheed/4E20CD3920CD2933/MTP';  
 end
 %% Config
-dataNum = 5689;
+dataNum = 2222;
+datasetName=num2str(dataNum);
+ datasetPath='~/git/Dataset/EM';
+ if(dataNum==1003)
+    emFile=strcat(datasetPath,'/EMD-1003','/map','/emd_1003.map'); 
+    em = mapReader(emFile);
+ end
+ if(dataNum==5693) 
+    emFile=strcat(datasetPath,'/EMD-5693','/map','/EMD-5693.map');
+    em = mapReader(emFile);
+ end
+ if(dataNum==5689) 
+    emFile=strcat(datasetPath,'/EMD-5689','/map','/EMD-5689.map');
+    em = mapReader(emFile);
+ end
+ if(dataNum==5762) 
+    emFile=strcat(datasetPath,'/EMD-5762','/map','/EMD-5762.map');
+    em = mapReader(emFile);
+ end 
+ if(dataNum==2222) 
+    emFile=strcat(datasetPath,'/EMD-2222','/map','/EMD-2222.map');
+    em = mapReader(emFile);
+ end 
+ em(em<0)=0;
+ emDim=size(em)'; 
+ fprintf('Dataset:%d Dim:%dx%dx%d\n',dataNum,emDim(1),emDim(2),emDim(3));
+ 
+%% Set Paths
 parentDirPath=strcat(basepath,'/',num2str(dataNum));
-subDirPath=strcat(parentDirPath,'/Projection_',num2str(dataNum),'_rnd');
+
+%subDirPath=strcat(parentDirPath,'/Projection_',num2str(dataNum),'_rnd');
+subDirPath=strcat(parentDirPath,'/Projection_',num2str(dataNum),'_guassina_dis_Quat');
+
+
 rawProjPath=strcat(subDirPath,'/raw_img');
-maxNumProj=500;
+maxNumProj=2000;
 tmpsaveDir=strcat('TmpSave/',num2str(dataNum));
 mkdir(tmpsaveDir);
-suffix='_c_500';
+suffix='_guassina_dis_Quat_2000';
+%suffix='_c_500';
 tmpProjPath=strcat(tmpsaveDir,'/tmp_result/projections',suffix,'.mat');
 tmpProj1DPath=strcat(tmpsaveDir,'/tmp_result/proj1D',suffix,'.mat');
 tmpPhiPath=strcat(tmpsaveDir,'/tmp_result/phi',suffix,'.mat');
+tmpTruePhiPath=strcat(tmpsaveDir,'/tmp_result/truePhi',suffix,'.mat');
+tmpTrueSPath=strcat(tmpsaveDir,'/tmp_result/trueS',suffix,'.mat');
 
 %%
 PP1=[
@@ -49,9 +84,13 @@ else
     save(tmpProjPath,'projections','-v7.3');
     fprintf('Done.\n');
 end
+trueAngles=load(strcat(subDirPath,'/angles.mat'),'angles');
+trueAngles=trueAngles.angles;
+trueAngles=trueAngles(:,1:maxNumProj);
+[trueRotMat] = convertAngleToRotMat(trueAngles');
 
 %imshow3D(projections);
-%% TEST FUNCTIONS
+%% Load/Find 1D Projections
 clear proj1D;
 if exist(tmpProj1DPath, 'file') == 2
     fprintf('Fast load: Loading 1D Projections from temporary storage...\n'); 
@@ -64,6 +103,7 @@ else
     save(tmpProj1DPath,'proj1D','-v7.3');
     fprintf('Calculation Done.\n');
 end
+
 %%
 
 gproj1D=gpuArray(proj1D);
@@ -77,7 +117,8 @@ p1_4=permute(p1,[3 2 1]);
 toc
 %% 
 [phi] = getPhi(gproj1D);
-%%
+%% Load/Find phi
+
 if exist(tmpPhiPath, 'file') == 2
     fprintf('Fast load: Loading phi from temporary storage...\n'); 
     phi=load(tmpPhiPath,'phi');
@@ -87,11 +128,25 @@ else
     fprintf('Calculating phi...\n');   
     gproj1D=gpuArray(proj1D);
     [phi,error] = getPhi(gproj1D);
-    %clear gproj1D;
-    %save(tmpPhiPath,'phi','-v7.3');
+    clear gproj1D;
+    save(tmpPhiPath,'phi','-v7.3');
     fprintf('Done.\n');
 end
+ 
+%% Calculate True S and Phi
 
+if exist(tmpTruePhiPath, 'file') == 1
+    fprintf('Fast load: Loading phi from temporary storage...\n'); 
+    truePhi=load(tmpTruePhiPath,'truePhi');
+    truePhi=truePhi.truePhi;
+    fprintf('Done.\n');
+else
+    fprintf('Calculating truePhi ...\n');       
+    [trueS,truePhi] = ASINGER2011_GetS_TESTFun(trueRotMat);    
+    save(tmpTruePhiPath,'truePhi','-v7.3');
+    save(tmpTrueSPath,'trueS','-v7.3');
+    fprintf('Done.\n');
+end
 
 %% Delete parallel pool
  p = gcp;
@@ -226,3 +281,85 @@ gP1D=gpuArray(P1D);
 [C1,C2] = findC(ex_phi);
 
 
+%% TEST A. SINGER 2011
+fprintf('Finding S:\n')
+%S=ASINGER2011_GetS_step1(phi);
+S=ASINGER2011_GetS_step1(truePhi);
+%S=trueS;
+fprintf('Done.\n')
+%%
+fprintf('Finding rotation matrix\n')
+[predR,ZYZ,U,Sv,V] = ASINGER2011_GetR_step2(S,size(phi,1));
+fprintf('Done.\n')
+%% Fing Global Rotation
+fprintf('Finding Global tranformation matrix\n');
+[trueRotMat] = convertAngleToRotMat(trueAngles');
+[gobalRotMat] = getGlobalRotTransformation(trueRotMat,predR);
+[newPredR,newZYZ] = transformRot(gobalRotMat,predR);
+fprintf('Done.\n');
+%% Reconstruct image using OS-SART and FDK
+emDim=[160,160,160]';
+p=single(projections);
+[reconstObjFBP] = reconstructObj(p,newZYZ,emDim);
+[trueObjFBP]=reconstructObj(p,trueAngles,emDim);
+imshow3D(reconstObjFBP);
+%% TEMP
+fprintf('TEMP : Finding Global tranformation matrix\n');
+
+[truePredR,~,trueU,trueSv,trueV] = ASINGER2011_GetR_step2(trueS,size(phi,1));
+
+[trueRotMat] = convertAngleToRotMat(trueAngles');
+[trueGobalRotMat] = getGlobalRotTransformation(trueRotMat,truePredR);
+[trueNewPredR,trueNewZYZ] = transformRot(trueGobalRotMat,truePredR);
+[trueReconstObjFBP] = reconstructObj(p,trueNewZYZ,emDim);
+imshow3D(trueReconstObjFBP);
+
+fprintf('TEMP: Done.\n');
+
+%% Record Video
+clear F;
+frameNo=1;
+N=size(reconstObjFBP,3);
+fig2=figure('units','normalized','outerposition',[0 0 1 1]);
+pause(5);
+minClrVal=min(trueObjFBP(:));maxClrVal=max(trueObjFBP(:));
+for i=1:N      
+    subplot(1,2,1)
+    imshow(trueObjFBP(:,:,i),[minClrVal maxClrVal]),colorbar;
+    tstr=sprintf('\\fontsize{14}{\\color{black}Original Z:%d/%d}',i,N);
+    title(tstr);
+    
+    subplot(1,2,2)
+    imshow(reconstObjFBP(:,:,i),[minClrVal maxClrVal]),colorbar;
+    tstr=sprintf('\\fontsize{14}{\\color{magenta}Reconstruction Z:%d/%d}',i,N);
+    title(tstr);
+    %pause(0.5);
+    F(frameNo)=getframe(fig2);frameNo=frameNo+1;
+end
+%% Record Video
+%F2=[F1,F];
+F2=F;
+fprintf('Creating Video.\n');
+% create the video writer with 1 fps
+%writerObj = VideoWriter('reconstruction_700_rand.avi');
+writerObj = VideoWriter(strcat(subDirPath,'/proj_uniform_2000_2_truePhi.avi'));
+
+writerObj.FrameRate = 2;% set the seconds per image
+
+% open the video writer
+open(writerObj);
+% write the frames to the video
+for i=1:length(F2)
+    % convert the image to a frame
+    frame = F2(i) ;    
+    writeVideo(writerObj, frame);
+end
+% close the writer object
+close(writerObj);
+fprintf('Done.\n');
+
+
+%%  TESTING CODE
+
+
+[S] = ASINGER2011_GetS_TESTFun(trueRotMat);
