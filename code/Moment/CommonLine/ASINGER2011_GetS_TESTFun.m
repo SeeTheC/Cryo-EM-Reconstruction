@@ -12,6 +12,7 @@ function [S,phi] = ASINGER2011_GetS_TESTFun(trueRot)
         for j=1:N         
             Rj=trueRot(:,:,j);
             tc=cross(Ri(:,3),Rj(:,3));
+            tc(abs(tc)<10^-9)=0;%making near to zero a zero            
             tc=tc./norm(tc);
             cij=Rit*tc;
             %cij=cij./norm(cij);

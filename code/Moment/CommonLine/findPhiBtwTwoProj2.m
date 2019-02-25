@@ -24,8 +24,8 @@ function [phi_ij,phi_ji,val,correlationMTX] = findPhiBtwTwoProj2(proj1,proj2)
         y=y+1;
     end
     
-    angleIncOffset=1;
-    phi_ij=x-angleIncOffset;
-    phi_ji=y-angleIncOffset;
+    angleIncOffset=0.5;
+    phi_ij=(x-1)*angleIncOffset;
+    phi_ji=(y-1)*angleIncOffset;
 end
 

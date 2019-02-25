@@ -6,8 +6,9 @@
 %  
 function [phi,error] = getPhi(proj1D)
     %% INIT
-    maxPhi_ij=180;
+    maxPhi_ij=360;
     N = size(proj1D,3);
+    %N=10;
     uHalfphi=zeros(N,N);
     lHalfphi=zeros(N,N); 
     uValHalfphi=zeros(N,N);
