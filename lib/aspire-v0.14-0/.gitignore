@@ -1,0 +1,19 @@
+extern/
+*.sw*
+.nfs*
+*.mex*
+*.o
+*.mrc
+*.mrcs
+*.mat
+*.fig
+*.ofig
+
+docs/*.log
+docs/*.pdf
+docs/*.aux
+
+tmpdir.cfg
+
+# Intellij/Pycharm environment files
+.idea/*

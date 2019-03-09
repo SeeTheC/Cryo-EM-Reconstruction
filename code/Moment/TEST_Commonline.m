@@ -4,6 +4,7 @@ clear all;
 addpath(genpath('../../lib/3dviewer'));
 addpath(genpath('../MapFileReader/'));
 addpath(genpath('../FileOperation'));
+addpath(genpath('../CommonFunctions'));
 addpath(genpath('CommonLine/'));
 callPath=pwd;
 cd('../../lib/CERN-TIGRE/MATLAB'); 
@@ -16,26 +17,70 @@ else
     basepath='/media/khursheed/4E20CD3920CD2933/MTP';  
 end
 %% Config
-dataNum = 5689;
-parentDirPath=strcat(basepath,'/',num2str(dataNum));
-subDirPath=strcat(parentDirPath,'/Projection_',num2str(dataNum),'_rnd');
+dataNum = 2222;
+datasetName=num2str(dataNum);
+ datasetPath='~/git/Dataset/EM';
+ if(dataNum==1003)
+    emFile=strcat(datasetPath,'/EMD-1003','/map','/emd_1003.map'); 
+    em = mapReader(emFile);
+ end
+ if(dataNum==5693) 
+    emFile=strcat(datasetPath,'/EMD-5693','/map','/EMD-5693.map');
+    em = mapReader(emFile);
+ end
+ if(dataNum==5689) 
+    emFile=strcat(datasetPath,'/EMD-5689','/map','/EMD-5689.map');
+    em = mapReader(emFile);
+ end
+ if(dataNum==5762) 
+    emFile=strcat(datasetPath,'/EMD-5762','/map','/EMD-5762.map');
+    em = mapReader(emFile);
+ end 
+ if(dataNum==2222) 
+    emFile=strcat(datasetPath,'/EMD-2222','/map','/EMD-2222.map');
+    em = mapReader(emFile);
+ end 
+ em(em<0)=0;
+ emDim=size(em)'; 
+ fprintf('Dataset:%d Dim:%dx%dx%d\n',dataNum,emDim(1),emDim(2),emDim(3));
+ 
+%% Set Paths
+datasetName=num2str(dataNum);
+%datasetName=strcat(datasetName,'_90degRot');
+
+parentDirPath=strcat(basepath,'/',datasetName);
+
+%subDirPath=strcat(parentDirPath,'/Projection_',num2str(dataNum),'_rnd');
+subDirPath=strcat(parentDirPath,'/Projection_',num2str(dataNum),'_guassina_dis_Quat');
+%subDirPath=strcat(parentDirPath,'/Projection_',num2str(dataNum),'_manual');
+
+
+tmpsaveDir=strcat('TmpSave/',datasetName);
+
+
 rawProjPath=strcat(subDirPath,'/raw_img');
-maxNumProj=500;
-tmpsaveDir=strcat('TmpSave/',num2str(dataNum));
+maxNumProj=2000;
 mkdir(tmpsaveDir);
-suffix='_c_500';
+suffix='_guassina_dis_Quat_2000';
+%suffix='_c_500';
+%suffix='_90deg_manual';
+
 tmpProjPath=strcat(tmpsaveDir,'/tmp_result/projections',suffix,'.mat');
 tmpProj1DPath=strcat(tmpsaveDir,'/tmp_result/proj1D',suffix,'.mat');
+tmpProjFourierLinesPath=strcat(tmpsaveDir,'/tmp_result/projLineFourierDomain_angRes_1',suffix,'.mat');
 tmpPhiPath=strcat(tmpsaveDir,'/tmp_result/phi',suffix,'.mat');
+tmpPhiFourierLinePath=strcat(tmpsaveDir,'/tmp_result/phiFourierLine_angRes_1',suffix,'.mat');
+tmpTruePhiPath=strcat(tmpsaveDir,'/tmp_result/truePhi',suffix,'.mat');
+tmpTrueSPath=strcat(tmpsaveDir,'/tmp_result/trueS',suffix,'.mat');
 
 %%
-PP1=[
+PP1f=[
         1,2,3,4,5;
         6,34,23,56,10;
         14,67,89,13,65;
         43,56,34,78,6;
         12,67,98,45,23;    
-    ]
+    ];
 
 %% Load Projections
 if exist(tmpProjPath, 'file') == 2
@@ -49,9 +94,13 @@ else
     save(tmpProjPath,'projections','-v7.3');
     fprintf('Done.\n');
 end
+trueAngles=load(strcat(subDirPath,'/angles.mat'),'angles');
+trueAngles=trueAngles.angles;
+trueAngles=trueAngles(:,1:min(maxNumProj,size(trueAngles,2)));
+[trueRotMat] = convertAngleToRotMat(trueAngles');
 
 %imshow3D(projections);
-%% TEST FUNCTIONS
+%% Load/Find 1D Projections
 clear proj1D;
 if exist(tmpProj1DPath, 'file') == 2
     fprintf('Fast load: Loading 1D Projections from temporary storage...\n'); 
@@ -64,20 +113,44 @@ else
     save(tmpProj1DPath,'proj1D','-v7.3');
     fprintf('Calculation Done.\n');
 end
+
+%% Load/Find Lines from Fourier Domain
+
+if exist(tmpProjFourierLinesPath, 'file') == 2
+    fprintf('Fast load: Loading Fourier lines Projections from temporary storage...\n'); 
+    fourierProjStruct=load(tmpProjFourierLinesPath);
+    fourierProjStruct=fourierProjStruct.fourierProjStruct;
+    fourierLines=fourierProjStruct.fourierLines;
+    angResolution=fourierProjStruct.angResolution;    
+    fprintf('Done.\n');    
+else
+    angResolution=1;
+    fprintf('Calculating Fourier lines projection ...\n'); 
+    [fourierLines] = getAllFourierDomainCL(projections,angResolution);
+    fourierProjStruct.fourierLines=fourierLines;
+    fourierProjStruct.angResolution=angResolution;
+    save(tmpProjFourierLinesPath,'fourierProjStruct','-v7.3');
+    fprintf('Calculation Done.\n');
+end
+
+
 %%
 
 gproj1D=gpuArray(proj1D);
 %%
 tic
-p1=gproj1D(:,:,1);
-p2=gproj1D(:,:,2);
-p1=p1(1:180,:);
-p1_4=permute(p1,[3 2 1]);
-[phi_ij,phi_ji,val,~] = findPhiBtwTwoProj2(p1_4,p2)
+p1d1=proj1D(:,:,1);
+p1d2=proj1D(:,:,2);
+p1d1=p1d1(1:1800,:);
+[phi_ij,phi_ji,val,~] = findPhiBtwTwoProj(p1d1,p1d2)
+% 149.5000 183.7000
+%p1_4=permute(p1,[3 2 1]);
+%[phi_ij,phi_ji,val,~] = findPhiBtwTwoProj2(p1_4,p2);
 toc
 %% 
 [phi] = getPhi(gproj1D);
-%%
+%% Load/Find phi using 1d Projection
+
 if exist(tmpPhiPath, 'file') == 2
     fprintf('Fast load: Loading phi from temporary storage...\n'); 
     phi=load(tmpPhiPath,'phi');
@@ -86,12 +159,71 @@ if exist(tmpPhiPath, 'file') == 2
 else
     fprintf('Calculating phi...\n');   
     gproj1D=gpuArray(proj1D);
+    %gproj1D=proj1D;
     [phi,error] = getPhi(gproj1D);
-    %clear gproj1D;
-    %save(tmpPhiPath,'phi','-v7.3');
+    clear gproj1D;
+    save(tmpPhiPath,'phi','-v7.3');
     fprintf('Done.\n');
 end
 
+%% Load/Find phi using Fourier Lines
+
+if exist(tmpPhiFourierLinePath, 'file') == 2
+    fprintf('Fast load: Loading phi (using Fourier Lines) from temporary storage...\n'); 
+    phiFourierLineStruct=load(tmpPhiFourierLinePath);
+    phiFourierLineStruct=phiFourierLineStruct.phiFourierLineStruct;
+    phiFourierLine=phiFourierLineStruct.phi;
+    angResolution=phiFourierLineStruct.angResolution;
+    fprintf('Done.\n');
+else
+    fprintf('Calculating phi (using Fourier Lines)...\n');   
+    gfourierLines=gpuArray(fourierLines);
+    %gfourierLines=fourierLines;
+    [phiFourierLine,errorFourierLine] = getPhiUsingFourierLines(gfourierLines,angResolution);
+    phiFourierLineStruct.phi=phiFourierLine;
+    phiFourierLineStruct.angResolution=angResolution;    
+    clear gfourierLines;
+    save(tmpPhiFourierLinePath,'phiFourierLineStruct','-v7.3');
+    fprintf('Done.\n');
+end
+%% Calculate True S and Phi
+
+if exist(tmpTruePhiPath, 'file') == 2
+    fprintf('Fast load: Loading phi from temporary storage...\n'); 
+    truePhi=load(tmpTruePhiPath,'truePhi');
+    truePhi=truePhi.truePhi;
+    truePhiDeg=truePhi.*(180/pi);
+    fprintf('Done.\n');
+else
+    fprintf('Calculating truePhi ...\n');       
+    [trueS,truePhi] = ASINGER2011_GetS_TESTFun(trueRotMat); 
+    truePhiDeg=truePhi.*(180/pi);
+    %save(tmpTruePhiPath,'truePhi','-v7.3');
+    %save(tmpTrueSPath,'trueS','-v7.3');
+    fprintf('Done.\n');
+end
+
+%% TESING COMMONLINE
+pidx1=1;pidx2=3;
+p1=projections(:,:,pidx1);
+p2=projections(:,:,pidx2);
+%[c1,~,~,fftP1]=getCommonlineValues(p1,phi(pidx1,pidx2));
+%[c2,~,~,fftP2]=getCommonlineValues(p2,phi(pidx2,pidx1));
+%error=RMSE(c1,c)
+%absError=abs(error)
+%% TEST Fourier 2 Lines
+[c3,~,~,fftP3]=getCommonlineValues(p1,49);
+[c4,~,~,fftP4]=getCommonlineValues(p2,50);
+error=RMSE(c3,c4)
+absError=abs(error)
+%% TEST Fourier 2 Lines
+[fphi_ij,fphi_ji,frmsError] = findPhiBtwTwoProj3UsingFT(p1,p3)
+%% TEST Fourier 2 Lines
+ftp1=fourierLines(:,:,1);
+ftp2=fourierLines(:,:,2);
+ftp1=ftp1(1:(180/angResolution),:);
+ftp1_4=permute(ftp1,[3 2 1]);
+[phi_ij,phi_ji,error,~]=findPhiBtwTwoProjFourierDomain2(ftp1_4,ftp2,angResolution)
 
 %% Delete parallel pool
  p = gcp;
@@ -150,7 +282,7 @@ phiAB=[0,0,90,45;
        0,180,180,0];
    
 M1 = A*A';
-[U,S1,V]=svds(M1);
+[U,S1,~]=svds(M1);
 C1=U*(S1^0.5);
 
 M2 = B*B';
@@ -190,20 +322,23 @@ O(:,:,1)=[1,2,3;4,5,6;7,8,9]
 O(:,:,2)=[10,11,12;13,14,15;16,17,18]
 O(:,:,3)=[19,20,21;22,23,24;25,26,27]
 
-%plane 1: YZ
+%plane 1: YZ : [0,0,0]
 p1=[0,0,0,0,0;
     0,O(1,:,1)+O(1,:,2)+O(1,:,3),0;
     0,O(2,:,1)+O(2,:,2)+O(2,:,3),0;
     0,O(3,:,1)+O(3,:,2)+O(3,:,3),0;
     0,0,0,0,0;]
 
-%plane 2: XY
+%plane 2: XY : [0,180,0]
 p2=[0,0,0,0,0;
     0,squeeze(O(1,1,:)+O(2,1,:)+O(3,1,:))',0;
     0,squeeze(O(1,2,:)+O(2,2,:)+O(3,2,:))',0;
     0,squeeze(O(1,3,:)+O(2,3,:)+O(3,3,:))',0;
-    0,0,0,0,0;]
-%plane 3: ZX
+    0,0,0,0,0;];
+
+p2=p2'
+
+%plane 3: ZX : [90,0,0]
 p3=[0,0,0,0,0;
     0,squeeze(O(1,1,:)+O(1,2,:)+O(1,3,:))',0;
     0,squeeze(O(2,1,:)+O(2,2,:)+O(2,3,:))',0;
@@ -218,11 +353,137 @@ p4=[0,7,16,25,0;
     0,3,12,21,0;
     ]
 
-P(:,:,1)=p1;P(:,:,2)=p2;P(:,:,3)=p3;P(:,:,4)=p4;
-
+p5= [  0,0,0,0,0;
+       7,24,61,44,27;
+       4,18,42,38,24;
+       1,12,33,32,21;
+       0,0,0,0,0;
+    ]
+cubeAng=[180,90,90;
+         90,90,0;
+         90,180,90;         
+        ]
+cubeAng=cubeAng'.*(pi./180);
+clear P;
+P(:,:,1)=p1;P(:,:,2)=p2;P(:,:,3)=p3;P(:,:,4)=p4;P(:,:,5)=p5;
+%P(:,:,4)=p4;
+%%
 [P1D] = get1DProjections(P);
 gP1D=gpuArray(P1D);
 [ex_phi,ex_error] = getPhi(gP1D);
 [C1,C2] = findC(ex_phi);
+%% TEST CUBE
+
+[cubeRotMat] = convertAngleToRotMat(cubeAng');
+cubeRotMatZYZ=eul2rotm(cubeAng','ZYZ');
+[cubeTrueS,cubeTruePhi] = ASINGER2011_GetS_TESTFun(cubeRotMatZYZ); 
+cubeTruePhiDeg=cubeTruePhi.*(180/pi);
+[cubeproj1D] = get1DProjections(P);
+[cubePhi,error] = getPhi(cubeproj1D);
+fprintf('Done.\n');
+%% TEST CUBE
+p1d1=cubeproj1D(:,:,1);
+p1d2=cubeproj1D(:,:,2);
+p1d1 = p1d1(1:180,:);
+[phi_ij,phi_ji,val,~] = findPhiBtwTwoProj(p1d1,p1d2);
+%% Adding error in true PHI
+rad=pi/180;
+noOfProj=size(truePhiDeg,2);
+%noise=randn(2000,2000)*100;
+%noise2=randi([1 50],noOfProj);
+%truePhiDegWithError=round(truePhiDeg);
+%truePhiDegWithError(1:1+noOfProj:end)=0;
+
+truePhiDegWithError=phi;
+truePhiDegWithError(1,:)=truePhiDeg(1,:);
 
 
+truePhiWithError=truePhiDegWithError.*rad;
+
+
+%% TEST A. SINGER 2011
+fprintf('Finding S:\n');
+radian=pi/180;
+%S=ASINGER2011_GetS_step1(phiFourierLine);
+S=ASINGER2011_GetS_step1(truePhiWithError);
+%S=ASINGER2011_GetS_step1(truePhi);
+%S=ASINGER2011_GetS_step1(phi.*radian);
+%S=trueS;
+fprintf('Done.\n');
+%%
+fprintf('Finding rotation matrix\n');
+[predR,ZYZ,U,Sv,V] = ASINGER2011_GetR_step2(S,size(truePhi,1));
+fprintf('Done.\n');
+%% Fing Global Rotation
+fprintf('Finding Global tranformation matrix\n');
+[trueRotMat] = convertAngleToRotMat(trueAngles');
+[gobalRotMat] = getGlobalRotTransformation(trueRotMat,predR);
+[newPredR,newZYZ] = transformRot(gobalRotMat,predR);
+fprintf('Done.\n');
+%% Reconstruct image using OS-SART and FDK
+emDim=[160,160,160]';
+noOfProj=size(newZYZ,2);
+p=single(projections);
+[reconstObjFBP] = reconstructObj(p,newZYZ,emDim);
+[trueObjFBP]=reconstructObj(p(:,:,1:noOfProj),trueAngles(:,1:noOfProj),emDim);
+imshow3D(reconstObjFBP);
+%% TEMP
+fprintf('TEMP : Finding Global tranformation matrix\n');
+
+[truePredR,~,trueU,trueSv,trueV] = ASINGER2011_GetR_step2(trueS,size(phi,1));
+
+[trueRotMat] = convertAngleToRotMat(trueAngles');
+[trueGobalRotMat] = getGlobalRotTransformation(trueRotMat,truePredR);
+[trueNewPredR,trueNewZYZ] = transformRot(trueGobalRotMat,truePredR);
+[trueReconstObjFBP] = reconstructObj(p,trueNewZYZ,emDim);
+imshow3D(trueReconstObjFBP);
+
+fprintf('TEMP: Done.\n');
+
+%% Record Video
+clear F;
+frameNo=1;
+N=size(reconstObjFBP,3);
+fig2=figure('units','normalized','outerposition',[0 0 1 1]);
+pause(5);
+minClrVal=min(trueObjFBP(:));maxClrVal=max(trueObjFBP(:));
+for i=1:N      
+    subplot(1,2,1)
+    imshow(trueObjFBP(:,:,i),[minClrVal maxClrVal]),colorbar;
+    tstr=sprintf('\\fontsize{14}{\\color{black}Original Z:%d/%d}',i,N);
+    title(tstr);
+    
+    subplot(1,2,2)
+    imshow(reconstObjFBP(:,:,i),[minClrVal maxClrVal]),colorbar;
+    tstr=sprintf('\\fontsize{14}{\\color{magenta}Reconstruction Z:%d/%d}',i,N);
+    title(tstr);
+    %pause(0.5);
+    F(frameNo)=getframe(fig2);frameNo=frameNo+1;
+end
+%% Record Video
+%F2=[F1,F];
+F2=F;
+fprintf('Creating Video.\n');
+% create the video writer with 1 fps
+%writerObj = VideoWriter('reconstruction_700_rand.avi');
+writerObj = VideoWriter(strcat(subDirPath,'/proj_uniform_2000_truePhi_withRoundPhi_NosiebBtw1to10.avi'));
+
+writerObj.FrameRate = 2;% set the seconds per image
+
+% open the video writer
+open(writerObj);
+% write the frames to the video
+for i=1:length(F2)
+    % convert the image to a frame
+    frame = F2(i) ;    
+    writeVideo(writerObj, frame);
+end
+% close the writer object
+close(writerObj);
+fprintf('Done.\n');
+
+
+%%  TESTING CODE
+
+
+[S] = ASINGER2011_GetS_TESTFun(trueRotMat);

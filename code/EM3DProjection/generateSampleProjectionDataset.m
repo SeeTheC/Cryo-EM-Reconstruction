@@ -1,6 +1,7 @@
 %% Generate Sample projection from the 3D structure ans the projections
 %% INIT - Reading Data Set
 clear all;
+addpath(genpath('../CommonFunctions'));
 rng(1);
 server = 1
 if server
@@ -17,7 +18,7 @@ funInitTIGRE();
 cd(callPath); 
 
 %% Config 1: Reading Emd virus
- dataNum = 5689;
+ dataNum = 1050;
  datasetName=num2str(dataNum);
  datasetPath='~/git/Dataset/EM';
  if(dataNum==1003)
@@ -28,17 +29,34 @@ cd(callPath);
     emFile=strcat(datasetPath,'/EMD-5693','/map','/EMD-5693.map');
     em = mapReader(emFile);
  end
-  if(dataNum==5689) 
+ if(dataNum==5689) 
     emFile=strcat(datasetPath,'/EMD-5689','/map','/EMD-5689.map');
     em = mapReader(emFile);
-  end
+ end
+ if(dataNum==5762) 
+    emFile=strcat(datasetPath,'/EMD-5762','/map','/EMD-5762.map');
+    em = mapReader(emFile);
+ end 
+ if(dataNum==2222) 
+    emFile=strcat(datasetPath,'/EMD-2222','/map','/EMD-2222.map');
+    em = mapReader(emFile);
+ end 
+ if(dataNum==2198) 
+    emFile=strcat(datasetPath,'/EMD-2198','/map','/EMD-2198.map');
+    em = mapReader(emFile);
+ end 
+ if(dataNum==1050) 
+    emFile=strcat(datasetPath,'/EMD-1050','/map','/EMD-1050.map');
+    em = mapReader(emFile);
+ end 
  em(em<0)=0;
  emDim=size(em)'; 
  fprintf('Dataset:%d Dim:%dx%dx%d\n',dataNum,emDim(1),emDim(2),emDim(3));
   
 %% Config 2: Set Save Paths
-timestamp=datestr(now,'dd-mm-yyyy HH:MM:SS');
-saveParentPath=strcat(basepath,'/',datasetName);
+suffix='';
+timestamp=datestr(now,'dd-mm-yyyy-HH_MM_SS');
+saveParentPath=strcat(basepath,'/',datasetName,suffix);
 savepath=strcat(saveParentPath,'/Projection_',num2str(dataNum),'_',timestamp); 
 savedImgDir=strcat(savepath,'/img');
 savedRawImgDir=strcat(savepath,'/raw_img');
@@ -64,8 +82,8 @@ fprintf(fid, 'img_no \t min_val \tmax_val \t ang_x \t ang_y \t ang_z \n');
 geo.DSD = 1000;                             % Distance Source Detector      (mm)
 geo.DSO = 500;                             % Distance Source Origin        (mm)
 % Detector parameters
-geo.nDetector=[256; 256];					% number of pixels              (px)
-geo.dDetector=[0.8; 0.8]; 					% size of each pixel            (mm)
+geo.nDetector=[100; 100];					% number of pixels              (px)
+geo.dDetector=[0.5; 0.5]; 					% size of each pixel            (mm)
 geo.sDetector=geo.nDetector.*geo.dDetector; % total size of the detector    (mm)
 % Image parameters
 geo.nVoxel=emDim;                           % number of voxels              (vx)
@@ -82,7 +100,7 @@ geo.accuracy=0.5;                           % Accuracy of FWD proj          (vx/
 geo.mode='parallel';
 plotgeometry(geo,-pi); 
 
-%% Projection
+%% Projection Angles 1
 % define projection angles (in radians)
 noOfAngles=5000;
 isRand=true;
@@ -103,7 +121,40 @@ end
 %y=[0,pi/2,pi/2 0,pi/2,pi/2];
 %z=[0,0,pi/2,pi/2,0,pi/2];
 %angles=[x;y;z];   
+%% Projection Angles 2: Guassian Distribution & quternion
+noOfAngles=20000;
+quternion=randn(noOfAngles,4);
+quternion=quternion./sqrt(sum(quternion.^2,2));
+for i=1:noOfAngles
+    [a,b,c]=quat2angle(quternion(i,:),'ZYZ');
+    angles(:,i)=[a,b,c]';
+end
+%% Projection Angles 3: Manual Angles with only 90deg rotation
 
+x=[0,0,0,0,pi/2,pi/2];
+y=[0,pi/2,pi/2 0,pi/2,pi/2];
+z=[0,0,pi/2,pi/2,0,pi/2];
+angles=[x;y;z];
+angles=[    0,      0,      0;
+            pi/2,   0,      0;
+            0,      pi/2,   0;
+            0,      0,      pi/2;
+            pi/2,   pi/2,   0;
+            pi/2,   0,      pi/2;
+            0,      pi/2,   pi/2;
+            pi/2,   pi/2,   pi/2;
+            
+            pi,     pi,      pi;
+            pi/2,   pi,      pi;
+            pi,     pi/2,    pi;
+            pi,     pi,      pi/2;
+            pi/2,   pi/2,    pi;
+            pi/2,   pi,      pi/2;
+            pi,     pi/2,    pi/2;
+            pi/2,   pi/2,    pi/2;
+            
+        ];
+angles=angles';
 %% Take projection
 fprintf('Taking projection...\n');
 tic
@@ -132,9 +183,11 @@ for i=1:N
     fprintf(fid, '%d \t %f \t %f \t %f \t %f \t %f \n',i,minValue, maxValue,angles(1,i),angles(2,i),angles(3,i));
     
 end
+save(strcat(savepath,'/angles.mat'),'angles');
 fprintf('Done\n');
-%%
 fclose(fid);
+
+%%
 
 
 

@@ -1,0 +1,26 @@
+function [features,autoenc] = feature1_AutoEncoder(images,config)
+    %% INIT 
+    layerNeuron=config.layerNeuron;
+    timestamp=config.timestamp;
+    
+    noOfLayer=numel(layerNeuron);
+    dataset = squeeze(num2cell(images,[1 2]))';
+    features=dataset;
+    %%
+    for i=1:noOfLayer
+        autoenc = trainAutoencoder(features,layerNeuron(i),...                        
+                    'EncoderTransferFunction','logsig',...
+                    'DecoderTransferFunction','logsig',...
+                    'L2WeightRegularization',0.01,...
+                    'MaxEpochs',1000,...
+                    'ShowProgressWindow',true,...
+                    'SparsityRegularization',4,...
+                    'SparsityProportion',0.05,...
+                    'UseGPU',false);
+        features = encode(autoenc,features);
+    end
+    
+    save(strcat('autoenc','_',timestamp,'.mat'),'autoenc');
+    
+end
+
