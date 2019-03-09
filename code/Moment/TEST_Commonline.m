@@ -45,6 +45,7 @@ datasetName=num2str(dataNum);
  fprintf('Dataset:%d Dim:%dx%dx%d\n',dataNum,emDim(1),emDim(2),emDim(3));
  
 %% Set Paths
+<<<<<<< HEAD
 datasetName=num2str(dataNum);
 %datasetName=strcat(datasetName,'_90degRot');
 
@@ -56,20 +57,36 @@ subDirPath=strcat(parentDirPath,'/Projection_',num2str(dataNum),'_guassina_dis_Q
 
 
 tmpsaveDir=strcat('TmpSave/',datasetName);
+=======
+parentDirPath=strcat(basepath,'/',num2str(dataNum));
+
+%subDirPath=strcat(parentDirPath,'/Projection_',num2str(dataNum),'_rnd');
+subDirPath=strcat(parentDirPath,'/Projection_',num2str(dataNum),'_guassina_dis_Quat');
+>>>>>>> 84a39d7eaf66bffde88ab4024e724c8b83d4bbbb
 
 
 rawProjPath=strcat(subDirPath,'/raw_img');
 maxNumProj=2000;
+<<<<<<< HEAD
 mkdir(tmpsaveDir);
 suffix='_guassina_dis_Quat_2000';
 %suffix='_c_500';
 %suffix='_90deg_manual';
 
+=======
+tmpsaveDir=strcat('TmpSave/',num2str(dataNum));
+mkdir(tmpsaveDir);
+suffix='_guassina_dis_Quat_2000';
+%suffix='_c_500';
+>>>>>>> 84a39d7eaf66bffde88ab4024e724c8b83d4bbbb
 tmpProjPath=strcat(tmpsaveDir,'/tmp_result/projections',suffix,'.mat');
 tmpProj1DPath=strcat(tmpsaveDir,'/tmp_result/proj1D',suffix,'.mat');
 tmpProjFourierLinesPath=strcat(tmpsaveDir,'/tmp_result/projLineFourierDomain_angRes_1',suffix,'.mat');
 tmpPhiPath=strcat(tmpsaveDir,'/tmp_result/phi',suffix,'.mat');
+<<<<<<< HEAD
 tmpPhiFourierLinePath=strcat(tmpsaveDir,'/tmp_result/phiFourierLine_angRes_1',suffix,'.mat');
+=======
+>>>>>>> 84a39d7eaf66bffde88ab4024e724c8b83d4bbbb
 tmpTruePhiPath=strcat(tmpsaveDir,'/tmp_result/truePhi',suffix,'.mat');
 tmpTrueSPath=strcat(tmpsaveDir,'/tmp_result/trueS',suffix,'.mat');
 
@@ -96,13 +113,17 @@ else
 end
 trueAngles=load(strcat(subDirPath,'/angles.mat'),'angles');
 trueAngles=trueAngles.angles;
+<<<<<<< HEAD
 trueAngles=trueAngles(:,1:min(maxNumProj,size(trueAngles,2)));
+=======
+trueAngles=trueAngles(:,1:maxNumProj);
+>>>>>>> 84a39d7eaf66bffde88ab4024e724c8b83d4bbbb
 [trueRotMat] = convertAngleToRotMat(trueAngles');
 
 %imshow3D(projections);
 %% Load/Find 1D Projections
 clear proj1D;
-if exist(tmpProj1DPath, 'file') == 2
+if exist(tmpProj1DPath, 'file') == 1
     fprintf('Fast load: Loading 1D Projections from temporary storage...\n'); 
     proj1D=load(tmpProj1DPath,'proj1D');
     proj1D=proj1D.proj1D;
@@ -110,10 +131,11 @@ if exist(tmpProj1DPath, 'file') == 2
 else
     fprintf('Calculating 1D projection ...\n'); 
     [proj1D] = get1DProjections(projections);
-    save(tmpProj1DPath,'proj1D','-v7.3');
+    %save(tmpProj1DPath,'proj1D','-v7.3');
     fprintf('Calculation Done.\n');
 end
 
+<<<<<<< HEAD
 %% Load/Find Lines from Fourier Domain
 
 if exist(tmpProjFourierLinesPath, 'file') == 2
@@ -134,14 +156,21 @@ else
 end
 
 
+=======
+>>>>>>> 84a39d7eaf66bffde88ab4024e724c8b83d4bbbb
 %%
 
 gproj1D=gpuArray(proj1D);
 %%
 tic
 p1d1=proj1D(:,:,1);
+<<<<<<< HEAD
 p1d2=proj1D(:,:,2);
 p1d1=p1d1(1:1800,:);
+=======
+p1d2=proj1D(:,:,3);
+p1d1=p1d1(1:1791,:);
+>>>>>>> 84a39d7eaf66bffde88ab4024e724c8b83d4bbbb
 [phi_ij,phi_ji,val,~] = findPhiBtwTwoProj(p1d1,p1d2)
 % 149.5000 183.7000
 %p1_4=permute(p1,[3 2 1]);
@@ -149,7 +178,11 @@ p1d1=p1d1(1:1800,:);
 toc
 %% 
 [phi] = getPhi(gproj1D);
+<<<<<<< HEAD
 %% Load/Find phi using 1d Projection
+=======
+%% Load/Find phi
+>>>>>>> 84a39d7eaf66bffde88ab4024e724c8b83d4bbbb
 
 if exist(tmpPhiPath, 'file') == 2
     fprintf('Fast load: Loading phi from temporary storage...\n'); 
@@ -166,6 +199,7 @@ else
     fprintf('Done.\n');
 end
 
+<<<<<<< HEAD
 %% Load/Find phi using Fourier Lines
 
 if exist(tmpPhiFourierLinePath, 'file') == 2
@@ -224,7 +258,40 @@ ftp2=fourierLines(:,:,2);
 ftp1=ftp1(1:(180/angResolution),:);
 ftp1_4=permute(ftp1,[3 2 1]);
 [phi_ij,phi_ji,error,~]=findPhiBtwTwoProjFourierDomain2(ftp1_4,ftp2,angResolution)
+=======
+%% Calculate True S and Phi
+>>>>>>> 84a39d7eaf66bffde88ab4024e724c8b83d4bbbb
 
+if exist(tmpTruePhiPath, 'file') == 1
+    fprintf('Fast load: Loading phi from temporary storage...\n'); 
+    truePhi=load(tmpTruePhiPath,'truePhi');
+    truePhi=truePhi.truePhi;
+    truePhiDeg=truePhi.*(180/pi);
+    fprintf('Done.\n');
+else
+    fprintf('Calculating truePhi ...\n');       
+    [trueS,truePhi] = ASINGER2011_GetS_TESTFun(trueRotMat); 
+    truePhiDeg=truePhi.*(180/pi);
+    %save(tmpTruePhiPath,'truePhi','-v7.3');
+    %save(tmpTrueSPath,'trueS','-v7.3');
+    fprintf('Done.\n');
+end
+
+%% TESING COMMONLINE
+pidx1=1;pidx2=2;
+p1=projections(:,:,pidx1);
+p2=projections(:,:,pidx2);
+%[c1,~,~,fftP1]=getCommonlineValues(p1,phi(pidx1,pidx2));
+%[c2,~,~,fftP2]=getCommonlineValues(p2,phi(pidx2,pidx1));
+%error=RMSE(c1,c)
+%absError=abs(error)
+%%
+[c3,~,~,fftP3]=getCommonlineValues(p1,90);
+[c4,~,~,fftP4]=getCommonlineValues(p5,45+90);
+error=RMSE(c3,c4)
+absError=abs(error)
+%%
+[fphi_ij,fphi_ji,frmsError] = findPhiBtwTwoProj3UsingFT(p1,p3)
 %% Delete parallel pool
  p = gcp;
 delete(p)
@@ -386,6 +453,7 @@ p1d1=cubeproj1D(:,:,1);
 p1d2=cubeproj1D(:,:,2);
 p1d1 = p1d1(1:180,:);
 [phi_ij,phi_ji,val,~] = findPhiBtwTwoProj(p1d1,p1d2);
+<<<<<<< HEAD
 %% Adding error in true PHI
 rad=pi/180;
 noOfProj=size(truePhiDeg,2);
@@ -408,11 +476,21 @@ radian=pi/180;
 S=ASINGER2011_GetS_step1(truePhiWithError);
 %S=ASINGER2011_GetS_step1(truePhi);
 %S=ASINGER2011_GetS_step1(phi.*radian);
+=======
+%% TEST A. SINGER 2011
+fprintf('Finding S:\n');
+%S=ASINGER2011_GetS_step1(phi);
+S=ASINGER2011_GetS_step1(truePhi);
+>>>>>>> 84a39d7eaf66bffde88ab4024e724c8b83d4bbbb
 %S=trueS;
 fprintf('Done.\n');
 %%
 fprintf('Finding rotation matrix\n');
+<<<<<<< HEAD
 [predR,ZYZ,U,Sv,V] = ASINGER2011_GetR_step2(S,size(truePhi,1));
+=======
+[predR,ZYZ,U,Sv,V] = ASINGER2011_GetR_step2(S,size(phi,1));
+>>>>>>> 84a39d7eaf66bffde88ab4024e724c8b83d4bbbb
 fprintf('Done.\n');
 %% Fing Global Rotation
 fprintf('Finding Global tranformation matrix\n');
@@ -422,10 +500,16 @@ fprintf('Finding Global tranformation matrix\n');
 fprintf('Done.\n');
 %% Reconstruct image using OS-SART and FDK
 emDim=[160,160,160]';
+<<<<<<< HEAD
 noOfProj=size(newZYZ,2);
 p=single(projections);
 [reconstObjFBP] = reconstructObj(p,newZYZ,emDim);
 [trueObjFBP]=reconstructObj(p(:,:,1:noOfProj),trueAngles(:,1:noOfProj),emDim);
+=======
+p=single(projections);
+[reconstObjFBP] = reconstructObj(p,newZYZ,emDim);
+[trueObjFBP]=reconstructObj(p,trueAngles,emDim);
+>>>>>>> 84a39d7eaf66bffde88ab4024e724c8b83d4bbbb
 imshow3D(reconstObjFBP);
 %% TEMP
 fprintf('TEMP : Finding Global tranformation matrix\n');
@@ -466,7 +550,11 @@ F2=F;
 fprintf('Creating Video.\n');
 % create the video writer with 1 fps
 %writerObj = VideoWriter('reconstruction_700_rand.avi');
+<<<<<<< HEAD
 writerObj = VideoWriter(strcat(subDirPath,'/proj_uniform_2000_truePhi_withRoundPhi_NosiebBtw1to10.avi'));
+=======
+writerObj = VideoWriter(strcat(subDirPath,'/proj_uniform_2000_2_truePhi.avi'));
+>>>>>>> 84a39d7eaf66bffde88ab4024e724c8b83d4bbbb
 
 writerObj.FrameRate = 2;% set the seconds per image
 

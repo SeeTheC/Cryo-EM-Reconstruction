@@ -3,7 +3,11 @@ function [proj1D] = get1DProjections(projections)
     %% INIT
     N= size(projections,3);    
     %N=10;% TEMP: DEBUG
+<<<<<<< HEAD
     angles=gpuArray([0:1:180-(1e-10)]); 
+=======
+    angles=gpuArray([0:0.5:179.5]); 
+>>>>>>> 84a39d7eaf66bffde88ab4024e724c8b83d4bbbb
     %a2=gpuArray([0:1:359]); 
     % GPU Array init
     projections=gpuArray(projections);    
