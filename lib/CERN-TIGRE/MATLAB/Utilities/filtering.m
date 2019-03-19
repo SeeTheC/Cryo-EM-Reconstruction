@@ -36,7 +36,7 @@ for ii=1:size(angles,2)
     
     fproj = (zeros(filt_len,geo.nDetector(2),'single'));
     
-    fproj(filt_len/2-geo.nDetector(1)/2+1:filt_len/2+geo.nDetector(1)/2,:) = proj(:,:,ii);
+    fproj(ceil(filt_len/2-geo.nDetector(1)/2+1):ceil(filt_len/2+geo.nDetector(1)/2),:) = proj(:,:,ii);
     
     fproj = fft(fproj);   
     
@@ -45,7 +45,7 @@ for ii=1:size(angles,2)
     fproj = (real(ifft(fproj)));
     
   
-    proj(:,:,ii) = fproj(end/2-geo.nDetector(1)/2+1:end/2+geo.nDetector(1)/2,:)/2/geo.dDetector(1)*(2*pi/  size(angles,2)   )/2*(geo.DSD(ii)/geo.DSO(ii));
+    proj(:,:,ii) = fproj(ceil(end/2-geo.nDetector(1)/2+1):ceil(end/2+geo.nDetector(1)/2),:)/2/geo.dDetector(1)*(2*pi/  size(angles,2)   )/2*(geo.DSD(ii)/geo.DSO(ii));
     %proj(:,:,ii) = fproj(end/2-geo.nDetector(1)/2+1:end/2+geo.nDetector(1)/2,:)/2/geo.dDetector(1)*(2*pi/  size(angles,2)   )/2*(geo.DSD/geo.DSO);
     
     

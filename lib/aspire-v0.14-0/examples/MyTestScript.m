@@ -28,7 +28,12 @@ datasetName=num2str(dataNum);
  if(dataNum==1050) 
     emFile=strcat(datasetPath,'/EMD-1050','/map','/EMD-1050.map');
     em = mapReader(emFile);
- end 
+ end
+ if(dataNum==76) 
+    emFile=strcat(datasetPath,'/EMD-0076','/map','/EMD-0076.map');
+    em = mapReader(emFile);
+ end
+ 
  if(dataNum==70)
     root = aspire_root();
     file_name = fullfile(root, 'projections', 'simulation', 'maps', 'cleanrib.mat');

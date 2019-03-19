@@ -27,10 +27,10 @@ viewstack(projections,10,10);   % Display the proejctions.
 log_message('Computing ground-truth common lines');
 n_theta=72; % Angular resolution - number of sinograms computed for each 
             % projection. This corresponds to a resolution of 5 degrees.
-n_theta=360*2;
+n_theta=360;
 
 [ref_clmatrix,~]=clmatrix_cheat(rots,n_theta);
-
+fprintf('Done.\n');
 %% Compute common lines from projections
 
 log_message('Estimating common lines from projections');
@@ -58,12 +58,13 @@ shift_step = 1;
 prop=comparecl( clstack, ref_clmatrix, n_theta, 10 );
 fprintf('Percentage of correct common lines: %f%%\n\n',prop*100);
 [ est_shifts, shift_err] = test_shifts( shift_equations, shifts);
-
+fprintf('Done.\n');
 %% Assign orientation using common lines, using least squares method.
 % The resulting MSE should be small (of the order of 1e-4).
 
 log_message('Estimating orientations of projections');
-S=cryo_syncmatrix_vote(clstack,n_theta);
+%S=cryo_syncmatrix_vote(clstack,n_theta);
+S=cryo_syncmatrix_vote(ref_clmatrix,n_theta);
 [est_inv_rots,diff,mse]=cryo_syncrotations(S,rots);
 fprintf('MSE of the estimated rotations: %5.2e\n\n', ...
     check_MSE(est_inv_rots,rots));
@@ -73,8 +74,8 @@ fprintf('MSE of the estimated rotations: %5.2e\n\n', ...
 tic
 log_message('Reconstructing 3D density from projections');
 params = struct();
-%params.rot_matrices = est_inv_rots;
-params.rot_matrices = newPredR;
+params.rot_matrices = est_inv_rots;
+%params.rot_matrices = newPredR;
 %params.rot_matrices= invert_rots(rots);
 
 params.ctf = ones(size(projections, 1)*ones(1, 2));

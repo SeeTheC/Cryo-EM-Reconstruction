@@ -13,6 +13,7 @@ function [clstack,corrstack,shift_equations,shift_equations_map,clstack_mask]=..
 
 % The following code is ungly, but I could not think of a better way.
 if ~is_gpu()
+%if is_gpu()
     if nargin==1
         [clstack,corrstack,shift_equations,shift_equations_map,clstack_mask]=...
             cryo_clmatrix_cpu(pf);

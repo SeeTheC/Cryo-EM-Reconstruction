@@ -18,11 +18,7 @@ funInitTIGRE();
 cd(callPath); 
 
 %% Config 1: Reading Emd virus
-<<<<<<< HEAD
- dataNum = 1050;
-=======
  dataNum = 2222;
->>>>>>> 84a39d7eaf66bffde88ab4024e724c8b83d4bbbb
  datasetName=num2str(dataNum);
  datasetPath='~/git/Dataset/EM';
  if(dataNum==1003)
@@ -45,7 +41,6 @@ cd(callPath);
     emFile=strcat(datasetPath,'/EMD-2222','/map','/EMD-2222.map');
     em = mapReader(emFile);
  end 
-<<<<<<< HEAD
  if(dataNum==2198) 
     emFile=strcat(datasetPath,'/EMD-2198','/map','/EMD-2198.map');
     em = mapReader(emFile);
@@ -54,8 +49,19 @@ cd(callPath);
     emFile=strcat(datasetPath,'/EMD-1050','/map','/EMD-1050.map');
     em = mapReader(emFile);
  end 
-=======
->>>>>>> 84a39d7eaf66bffde88ab4024e724c8b83d4bbbb
+  if(dataNum==76) 
+    emFile=strcat(datasetPath,'/EMD-0076','/map','/EMD-0076.map');
+    em = mapReader(emFile);
+ end
+ 
+ if(dataNum==70)
+    root = aspire_root();
+    file_name = fullfile(root, 'projections', 'simulation', 'maps', 'cleanrib.mat');
+    em = load(file_name);
+    em=em.volref;
+    em=single(em);
+ end
+ 
  em(em<0)=0;
  emDim=size(em)'; 
  fprintf('Dataset:%d Dim:%dx%dx%d\n',dataNum,emDim(1),emDim(2),emDim(3));
@@ -89,12 +95,8 @@ fprintf(fid, 'img_no \t min_val \tmax_val \t ang_x \t ang_y \t ang_z \n');
 geo.DSD = 1000;                             % Distance Source Detector      (mm)
 geo.DSO = 500;                             % Distance Source Origin        (mm)
 % Detector parameters
-<<<<<<< HEAD
-geo.nDetector=[100; 100];					% number of pixels              (px)
-=======
-geo.nDetector=[256; 256];					% number of pixels              (px)
->>>>>>> 84a39d7eaf66bffde88ab4024e724c8b83d4bbbb
-geo.dDetector=[0.5; 0.5]; 					% size of each pixel            (mm)
+geo.nDetector=[128; 128];					% number of pixels              (px)
+geo.dDetector=[1; 1]; 					% size of each pixel            (mm)
 geo.sDetector=geo.nDetector.*geo.dDetector; % total size of the detector    (mm)
 % Image parameters
 geo.nVoxel=emDim;                           % number of voxels              (vx)
@@ -133,18 +135,13 @@ end
 %z=[0,0,pi/2,pi/2,0,pi/2];
 %angles=[x;y;z];   
 %% Projection Angles 2: Guassian Distribution & quternion
-<<<<<<< HEAD
-noOfAngles=20000;
-=======
-noOfAngles=3000;
->>>>>>> 84a39d7eaf66bffde88ab4024e724c8b83d4bbbb
+noOfAngles=100;
 quternion=randn(noOfAngles,4);
 quternion=quternion./sqrt(sum(quternion.^2,2));
 for i=1:noOfAngles
     [a,b,c]=quat2angle(quternion(i,:),'ZYZ');
     angles(:,i)=[a,b,c]';
 end
-<<<<<<< HEAD
 %% Projection Angles 3: Manual Angles with only 90deg rotation
 
 x=[0,0,0,0,pi/2,pi/2];
@@ -171,8 +168,6 @@ angles=[    0,      0,      0;
             
         ];
 angles=angles';
-=======
->>>>>>> 84a39d7eaf66bffde88ab4024e724c8b83d4bbbb
 %% Take projection
 fprintf('Taking projection...\n');
 tic
@@ -183,6 +178,7 @@ fprintf('Done\n');
 fprintf('Ploting Projection...\n');
 %plotProj(projections,angles,'Savegif','pro_anglesXYZ11_rand.gif')
 fprintf('Done\n');
+
 %% Save Projection
 N=size(projections,3);
 fprintf('Saving total Projections: %d ...\n',N);

@@ -4,11 +4,7 @@
 % Equation: 5.4 & 5.5
 function [gobalRot] = getGlobalRotTransformation(trueR,predR)
     %% INIT
-<<<<<<< HEAD
     N= size(predR,3);    
-=======
-    N= size(trueR,3);    
->>>>>>> 84a39d7eaf66bffde88ab4024e724c8b83d4bbbb
     %% Finding Q. Eq: 5.3
     Q=zeros(3,3);
     for i=1:N

@@ -1,5 +1,6 @@
 function [S,phi] = ASINGER2011_GetS_TESTFun(trueRot)
     %% INIT
+    %trueRot=permute(trueRot,[2 1 3]);
     N=size(trueRot,3);
     S=[];
     %% Process
@@ -9,16 +10,20 @@ function [S,phi] = ASINGER2011_GetS_TESTFun(trueRot)
     for i=1:N
         Ri=trueRot(:,:,i); 
         Rit=Ri';
-        for j=1:N         
+        for j=1+i:N         
             Rj=trueRot(:,:,j);
             tc=cross(Ri(:,3),Rj(:,3));
             tc(abs(tc)<10^-9)=0;%making near to zero a zero            
             tc=tc./norm(tc);
             cij=Rit*tc;
+            cji=Rj'*tc;
             %cij=cij./norm(cij);
             if (i~=j)
                 x(i,j)=cij(1);y(i,j)=cij(2);            
-                phi(i,j)=atan2(cij(2),cij(1)); 
+                phi(i,j)=(atan2(cij(2),cij(1)));
+                
+                x(j,i)=cji(1);y(j,i)=cji(2);            
+                phi(j,i)=(atan2(cji(2),cji(1))); 
             end
         end
     end

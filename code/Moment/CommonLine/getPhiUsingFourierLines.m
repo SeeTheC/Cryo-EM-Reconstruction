@@ -6,7 +6,7 @@
 % 
 function [phi,error] = getPhiUsingFourierLines(projFourierLines,angResolution)
     N = size(projFourierLines,3);
-    N=1000; % TEMP. DEBUG
+    %N=1000; % TEMP. DEBUG
     maxPhi_ij=size(projFourierLines,1)/2;    
     uHalfphi=zeros(N,N);
     lHalfphi=zeros(N,N); 
