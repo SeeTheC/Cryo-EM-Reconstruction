@@ -31,6 +31,7 @@ vol_true=em;
 %vol_true = cryo_downsample(vol_true, L*ones(1, 3));
 
 %% Generate random rotations. These are the true viewing directions.
+tic
 fprintf('Finding Projections ... \n');
 rots_true = rand_rots(n);
 inv_rots_true = invert_rots(rots_true);
@@ -45,6 +46,7 @@ ims_clean = permute(ims_clean, [2 1 3]);
 ims=ims_clean;
 
 fprintf('Done.\n');
+toc
 %% TIGRE
 emDim=[360;360;360];
 noOfProj=n;

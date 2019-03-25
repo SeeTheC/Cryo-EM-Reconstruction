@@ -8,11 +8,15 @@
 % Dev: Khursheed Ali
 % Date: 21-09-2018
 
-function [AMtx] = weightMtx(momentOrder,angles)    
+function [AMtx] = weightMtx(momentOrder,angles,offset)    
     %% INIT
     TIGER_PROJECTION_YANGLE_FIX=-pi/2;    
     ax=angles(1);ay=angles(2);az=angles(3);    
-    Ri=rotationMatrix(ax,ay+TIGER_PROJECTION_YANGLE_FIX,az);
+    %Ri=rotationMatrix(ax,ay+TIGER_PROJECTION_YANGLE_FIX,az);
+    %Ri=rotationMatrix(ax-pi/2,ay+pi,az+pi); % p1   
+    %Ri=rotationMatrix(ax+pi/2+pi,ay-pi+pi/2,az-pi+pi/2); % p2
+    Ri=rotationMatrix(ax+offset(1),ay+offset(2),az+offset(3));
+    
     order2d=gen2dOrderMoment(momentOrder); 
     order3d=gen3dOrderMoment(momentOrder); 
     %% Finding weights

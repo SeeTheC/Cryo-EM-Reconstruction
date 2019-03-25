@@ -1,4 +1,5 @@
 % https://en.wikipedia.org/wiki/Image_moment
+% Author: Khursheed Ali
 
 function [moment_kl] = centralMoment2D(f,k,l)
     %% Init   

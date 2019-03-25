@@ -5,10 +5,7 @@
 clear all;
 addpath(genpath('../../lib/3dviewer'));
 addpath(genpath('../MapFileReader/'));
-callPath=pwd;
-cd('../../lib/CERN-TIGRE/MATLAB'); 
-funInitTIGRE();
-cd(callPath); 
+addpath(genpath('../../lib/aspire-v0.14-0'));
 
 %% Init Object:
 %Object: 1
@@ -20,8 +17,8 @@ O1(:,:,3)=[1,2,3;4,5,6;7,8,9];
 O2=permute(O1,[3,2,1]);
 
 O3(:,:,1)=[1,2,3;4,5,6;7,8,9];
-O3(:,:,2)=[11,12,13;14,15,16;17,18,19];
-O3(:,:,3)=[21,22,23;24,25,26;27,28,29];
+O3(:,:,2)=[10,11,12;13,14,15;16,17,18];
+O3(:,:,3)=[19,20,21;22,23,24;25,26,27];
 
 
 obj1=single(O1);
@@ -29,34 +26,51 @@ obj3d=permute(obj1,[3,2,1]);
 objSize=size(obj1)';
 
 %% Take Projection
-[geo,padding]=getProjGeometry(objSize)
-obj=padarray(obj1,padding./2);
-%potgeometry(geo,-pi); 
+obj=obj1;
 
 % Angles
-x=[0,0,0,0,pi/2,pi,pi/3,pi+(pi/3)];
-y=[0,-pi/2,pi/2 0,pi,pi,pi/3,pi/3+pi];
-z=[0,0,pi/2,pi/2,0,pi,pi/6,pi-pi/6];
-angles=[x;y;z];
+%x=[0,0,0,0,pi/2,pi,pi/3,pi+(pi/3)];
+%y=[0,-pi/2,pi/2 0,pi,pi,pi/3,pi/3+pi];
+%z=[0,0,pi/2,pi/2,0,pi,pi/6,pi-pi/6];
+%angles=[x;y;z];
+
+angles= [ 0,        0,      0;
+          pi/2,     0,      0;
+          0,        pi/2,   0;
+          0,        0,      pi/2;
+          pi,       0,      0;
+          0,        pi,     0;
+          0,        0,      pi;
+          pi/2,     pi/2,   0;
+          pi/2,     0,      pi/2;
+          0,        pi/2,   pi/2;          
+          pi/4,     pi/4,   pi/4;
+          0,        pi/4,   pi/4;
+    ];
+
+angles=angles';
+
+rots_true=eul2rotm(angles');
 
 % take projection
 fprintf('Taking projection...\n');
 tic
-projections=Ax(obj,geo,angles,'interpolated');
-%projections=Ax(obj,geo,angles);
+
+projections = cryo_project(obj, rots_true);  
+projections = permute(projections, [2 1 3]);
+
 toc
 fprintf('Done\n');
 % Plot Projections
-fprintf('Ploting Projection...\n');
-%plotProj(projections,angles,'Savegif','temp.gif')
-fprintf('Done\n');
 %% Verifying - Moment Eq15 
 % p(k,l) (i) = m(k,l,0) (fRi ) =  ∑ |α|=k+l a(Ri ; k, l; α) mα,
 % (2,0) & (2,1)
 fprintf('-------------------------\n');
-projIdx=2;
+projIdx=1;
 k=2;l=1;
 f=projections(:,:,projIdx);
+%f=npro(:,:,projIdx);
+
 ax=angles(1,projIdx);ay=angles(2,projIdx);az=angles(3,projIdx);
 % Eq15 : Left Side
 Pkl=centralMoment2D(f,k,l);
@@ -66,6 +80,8 @@ Pkl=centralMoment2D(f,k,l);
 % Eq15 : Right Side
 alpha=k+l;
 Ri=rotationMatrix(ax,ay-pi/2,az);
+%Ri=eul2rotm([ax,ay+pi/2,az-pi/2],'ZYZ');
+
 %Ri=rotationMatrix(0,-pi/2,0);
 order=gen3dOrderMoment(alpha);
 rightSide=0;
@@ -79,10 +95,11 @@ end
 fprintf('Pkl:%f\trightSide:%f\n',Pkl,rightSide);
 %% Testing Eq 16 My Matrix 
 fprintf('-------------------------\n');
-projIdx=3;
-momentOrder=2;
+projIdx=1;
+momentOrder=3;
 f=projections(:,:,projIdx);
 ax=angles(1,projIdx);ay=angles(2,projIdx);az=angles(3,projIdx);
+
 % Eq 16
 Pn=nthCentralMoment2D(f,momentOrder);
 AMtx=weightMtx(momentOrder,[ax,ay,az]);
@@ -91,6 +108,37 @@ fprintf('Left Side Pn:\n');
 disp(Pn);
 fprintf('Right Side AMtx*Mn:\n');
 disp(AMtx*Mn);
+%% TEST:FINDING CORRECT ORIENTATION
+offset=[0,pi/2,pi,3*pi/2,-2*pi,-pi/2,-pi,-3*pi/2];
+n=numel(offset);
+projIdx=1;
+momentOrder=3;
+minError=Inf;
+fprintf('Trying to find offset..\n');
+fo
+for i=1:n
+    for j=1:n
+        for k=1:n
+            f=projections(:,:,projIdx);
+            ax=angles(1,projIdx);ay=angles(2,projIdx);az=angles(3,projIdx);
+            % Eq 16
+            Pn_true=nthCentralMoment2D(f,momentOrder);
+            AMtx=weightMtx(momentOrder,[ax,ay,az],[offset(i),offset(j),offset(k)]);
+            Mn=nthCentralMoment3D(obj,momentOrder);
+            Pn_est= AMtx*Mn;
+            error=norm(Pn-Pn_est);
+            if error<=minError
+                minError=error;
+                ansi=i;ansj=j;ansk=k;
+                if(error==0)
+                    ans(:,:,projIdx)=[i,j,k];
+                end
+                fprintf('i:%d j:%d k:%d error:%f \n',i,j,k,minError);
+            end
+        end
+    end
+end
+fprintf('Done..\n');
 %% Bulk Projection
 projectionsCell = num2cell(projections,[1 2]);
 momentOrder=2;

@@ -1,24 +1,25 @@
 %% Generate Sample projection from the 3D structure ans the projections
 %% INIT - Reading Data Set
 clear all;
+addpath(genpath('../../lib/aspire-v0.14-0'));
 addpath(genpath('../CommonFunctions'));
-rng(1);
+% EMD 3D Projection -  Init
+addpath(genpath('../../lib/3dviewer'));
+addpath(genpath('../MapFileReader/'));
+callPath=pwd;
+cd('../../lib/CERN-TIGRE/MATLAB'); 
+
 server = 1
 if server
     basepath='~/git/Cryp-EM/Cryo-EM-Reconstruction/code/data';
 else
     basepath='/media/khursheed/4E20CD3920CD2933/MTP';  
 end
-% EMD 3D Projection -  Init
-addpath(genpath('../../lib/3dviewer'));
-addpath(genpath('../MapFileReader/'));
-callPath=pwd;
-cd('../../lib/CERN-TIGRE/MATLAB'); 
 funInitTIGRE();
 cd(callPath); 
 
 %% Config 1: Reading Emd virus
- dataNum = 2222;
+ dataNum = 76;
  datasetName=num2str(dataNum);
  datasetPath='~/git/Dataset/EM';
  if(dataNum==1003)
@@ -135,7 +136,7 @@ end
 %z=[0,0,pi/2,pi/2,0,pi/2];
 %angles=[x;y;z];   
 %% Projection Angles 2: Guassian Distribution & quternion
-noOfAngles=100;
+noOfAngles=20000;
 quternion=randn(noOfAngles,4);
 quternion=quternion./sqrt(sum(quternion.^2,2));
 for i=1:noOfAngles
@@ -168,7 +169,7 @@ angles=[    0,      0,      0;
             
         ];
 angles=angles';
-%% Take projection
+%% Take projection: USING TIGRE
 fprintf('Taking projection...\n');
 tic
 projections=Ax(em,geo,angles,'interpolated');
@@ -179,6 +180,17 @@ fprintf('Ploting Projection...\n');
 %plotProj(projections,angles,'Savegif','pro_anglesXYZ11_rand.gif')
 fprintf('Done\n');
 
+%% Take projection: USING ASPIRE 
+n=20000;
+rots_true = rand_rots(n);
+n_theta = 360; 
+
+fprintf('Taking projection...\n');
+
+% Generate clean image by projecting volume along rotations.
+ims_clean = cryo_project(em, rots_true);
+
+fprintf('Done\n');
 %% Save Projection
 N=size(projections,3);
 fprintf('Saving total Projections: %d ...\n',N);

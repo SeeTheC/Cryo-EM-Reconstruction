@@ -16,9 +16,9 @@ function [moment,order,combined] = nthCentralMoment3D(f,n)
         moment_klm=centralMoment3D(f,k,l,m);
     end
     %% 3. Find All moments parallel 
-    fprintf('Finding F(%d) moment..\n',n);        
+    %fprintf('Finding F(%d) moment..\n',n);        
     allMoments=arrayfun(@perOrder_kl,cellOrder);
-    fprintf('Done.\n');
+    %fprintf('Done.\n');
     %% 4. Result
     moment=allMoments;    
     combined=[order,moment];
