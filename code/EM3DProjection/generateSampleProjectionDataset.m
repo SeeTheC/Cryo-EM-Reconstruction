@@ -19,7 +19,7 @@ funInitTIGRE();
 cd(callPath); 
 
 %% Config 1: Reading Emd virus
- dataNum = 76;
+ dataNum = 8647;
  datasetName=num2str(dataNum);
  datasetPath='~/git/Dataset/EM';
  if(dataNum==1003)
@@ -50,7 +50,13 @@ cd(callPath);
     emFile=strcat(datasetPath,'/EMD-1050','/map','/EMD-1050.map');
     em = mapReader(emFile);
  end 
+ if(dataNum==8647) 
+     % 128x128x128
+    emFile=strcat(datasetPath,'/EMD-8647','/map','/EMD-8647.map');
+    em = mapReader(emFile);
+ end
   if(dataNum==76) 
+    % 360x360x360
     emFile=strcat(datasetPath,'/EMD-0076','/map','/EMD-0076.map');
     em = mapReader(emFile);
  end
@@ -181,19 +187,24 @@ fprintf('Ploting Projection...\n');
 fprintf('Done\n');
 
 %% Take projection: USING ASPIRE 
-n=20000;
+tic
+n=10000;
 rots_true = rand_rots(n);
-n_theta = 360; 
+angles=rotm2eul(rots_true)';
+%save(strcat(savepath,'/rots_true.mat'),'angles');
 
 fprintf('Taking projection...\n');
 
 % Generate clean image by projecting volume along rotations.
-ims_clean = cryo_project(em, rots_true);
+projections = cryo_project(em, rots_true);
 
 fprintf('Done\n');
+toc
 %% Save Projection
 N=size(projections,3);
 fprintf('Saving total Projections: %d ...\n',N);
+fprintf(fid,'NOTE: Projections are taken from ASPIRE');
+
 %fig3=figure('units','normalized','outerposition',[0 0 1 1]);
 for i=1:N          
     img=projections(:,:,i);
@@ -203,6 +214,7 @@ for i=1:N
     maxValue=max(img(:)); 
     minValue=min(img(:)); 
     img=img-minValue;
+    
     %Saving img
     imwrite(img./maxValue,strcat(savedImgDir,'/',num2str(i),'.jpg'));
     % writing to file

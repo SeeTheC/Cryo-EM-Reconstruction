@@ -6,7 +6,7 @@ addpath(genpath('../../lib/3dviewer'));
 addpath(genpath('../MapFileReader/'));
 addpath(genpath('../FileOperation'));
 addpath(genpath('../CommonFunctions'));
-addpath(genpath('CommonLine/'));
+addpath(genpath('../CommonLine/'));
 callPath=pwd;
 cd('../../lib/CERN-TIGRE/MATLAB'); 
 funInitTIGRE();
@@ -20,7 +20,7 @@ end
 
 
 %% Config
-dataNum = 76;
+dataNum = 8647;
 datasetName=num2str(dataNum);
  datasetPath='~/git/Dataset/EM';
  if(dataNum==1003)
@@ -47,12 +47,18 @@ datasetName=num2str(dataNum);
     emFile=strcat(datasetPath,'/EMD-1050','/map','/EMD-1050.map');
     em = mapReader(emFile);
  end 
+
  if(dataNum==76) 
     emFile=strcat(datasetPath,'/EMD-0076','/map','/EMD-0076.map');
     em = mapReader(emFile);
  end
- 
+ if(dataNum==8647) 
+     % 128x128x128
+    emFile=strcat(datasetPath,'/EMD-8647','/map','/EMD-8647.map');
+    em = mapReader(emFile);
+ end
  if(dataNum==70)
+    % 65x65x65
     root = aspire_root();
     file_name = fullfile(root, 'projections', 'simulation', 'maps', 'cleanrib.mat');
     em = load(file_name);
@@ -102,18 +108,19 @@ for i=1:noOfAngles
     [a,b,c]=quat2angle(quternion(i,:),'ZYZ');
     angles(:,i)=[a,b,c]';
 end
+
 trueAngles=angles;
 [trueRotMat] = convertAngleToRotMat(trueAngles');
 
 maxNumProj=noOfAngles;
-
+%%
 % VARIABLE                                   DESCRIPTION                    UNITS
 %-------------------------------------------------------------------------------------
 %geo.DSD = 1536;                             % Distance Source Detector     (mm)
 geo.DSD = 1000;                             % Distance Source Detector      (mm)
 geo.DSO = 500;                             % Distance Source Origin        (mm)
 % Detector parameters
-geo.nDetector=[370; 370];					% number of pixels              (px)
+geo.nDetector=[150; 150];					% number of pixels              (px)
 geo.dDetector=[1; 1]; 					% size of each pixel            (mm)
 geo.sDetector=geo.nDetector.*geo.dDetector; % total size of the detector    (mm)
 % Image parameters

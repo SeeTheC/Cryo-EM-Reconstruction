@@ -27,7 +27,8 @@ obj1=single(O3);
 objSize=size(obj1)';
 
 %% Take Projection
- 
+
+
 % Angles
 %x=[0,0,0,0,pi/2,pi,pi/3,pi+(pi/3)];
 %y=[0,-pi/2,pi/2 0,pi,pi,pi/3,pi/3+pi];
@@ -83,37 +84,24 @@ angles= [ 0,        0,      0;
           3*pi/2,   3*pi/2, 3*pi/2;
           
           pi/4,     0,      0;
-          0,        pi/4,   0;
-          0,        0,      pi/4;
-          pi/4,     pi/4,   0;
+          pi/4,     pi/4,      0;
           0,        pi/4,   pi/4;
-          pi/4,     0,      pi/4;
           pi/4,     pi/4,   pi/4;
           pi/3,     pi/3,   pi/4;
           
     ];
 
 angles=angles';
-%%
+
+
+%% Take projection
 [geo,padding]=getProjGeometry(objSize);
 obj=padarray(obj1,padding./2);
+%potgeometry(geo,-pi); 
 
-angT=angles';
-angT=fliplr(angT)';
-
-tobj=obj;
-tobj = permute(obj,[3 2 1]);
-%tobj = permute(tobj,[2 1 3]);
-%tobj= flipud(tobj);
-
-% coverting
-rotMtxZYX=eul2rotm(angT','ZYX');
-angZYZ=rotm2eul(rotMtxZYX,'ZYZ')';
-
-% take projection
 fprintf('Taking projection...\n');
 tic
-projections=Ax(tobj,geo,angZYZ,'interpolated');
+projections=Ax(obj,geo,angles,'interpolated');
 %projections=Ax(obj,geo,angles);
 toc
 fprintf('Done\n');
@@ -127,15 +115,24 @@ ang=angles';
 %ang(:,2)=ang(:,2)-pi/2;
 %ang(:,3)=ang(:,3)+pi/2;
 
-rots_true=eul2rotm(ang);
+
 
 % take projection
 fprintf('Taking projection...\n');
 tic
 
 to=O3;
-%to = permute(O3,[3 2 1]);
+to = permute(O3,[3 2 1]);
+
+% coverting
  
+angT=angles';
+angT=fliplr(angT)';
+
+rotMtxZYZ=eul2rotm(angT','ZYX');
+angZYX=rotm2eul(rotMtxZYZ,'ZYZ')';
+rots_true=eul2rotm(angles');
+
 aPro = cryo_project(single(to), rots_true);  
 %aPro = permute(aPro, [2 1 3]);
 

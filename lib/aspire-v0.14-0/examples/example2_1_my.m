@@ -24,7 +24,7 @@ vol_true = cryo_downsample(f.volref, L*ones(1, 3));
 
 %% TEMP
 n = 100;
-L = 360;
+L = 150;
 n_r = ceil(L/2);     
 n_theta = 360; 
 vol_true=em;
@@ -32,10 +32,11 @@ vol_true=em;
 
 %% Generate random rotations. These are the true viewing directions.
 tic
-fprintf('Finding Projections ... \n');
+
 rots_true = rand_rots(n);
 inv_rots_true = invert_rots(rots_true);
-
+%%
+fprintf('Finding Projections ... \n');
 % Generate clean image by projecting volume along rotations.
 ims_clean = cryo_project(vol_true, rots_true);
 
@@ -47,22 +48,27 @@ ims=ims_clean;
 
 fprintf('Done.\n');
 toc
-%% TIGRE
-emDim=[360;360;360];
+%% 
+obj=em;
+angles=rotm2eul(rots_true,'ZYX');
+objSize=size(obj)';
+
+%% TIGRE : RECONS
+emDim=[128;128;128];
 noOfProj=n;
 p2=permute(ims, [2 1 3]);
 p=p2;
 
-%trueAngles=rotm2eul(inv_rots_true,'ZYX')'; % working
-%angles=trueAngles;
+trueAngles=rotm2eul(inv_rots_true,'ZYX')'; % working
+angles=trueAngles;
 
 %predAngles=rotm2eul(permute(inv_rots_aligned,[2 1 3]),'ZYX')';
 %angles=predAngles;
 
-inv_rots_aligned = align_rots(predR,inv_rots_true);
+%inv_rots_aligned = align_rots(predR,inv_rots_true);
 
-predAngles=rotm2eul(inv_rots_aligned,'ZYX')'; 
-angles=predAngles;
+%predAngles=rotm2eul(inv_rots_aligned,'ZYX')'; 
+%angles=predAngles;
 
 %angles(3,:)=angles(3,:)-pi/2;
 angles(2,:)=angles(2,:)+pi/2;
@@ -131,11 +137,11 @@ clstack_true = clmatrix_cheat(rots_true, n_theta);
 % Compare common lines computed from projections to the reference common
 % lines. A common line is considered correctly-identified if it deviates
 % from the true common line between the projections by up to 10 degrees.
-prop=comparecl( clstack_true, clstack_est, n_theta, 0 );
+prop=comparecl( clstack_true, clstack_est, n_theta, 1 );
 fprintf('Percentage of correct common lines: %f%%\n\n',prop*100);
 fprintf('Done.\n');
 
-%% MY
+%% MY : 
 projections=permute(ims,[2 1 3]);
 [proj1D] = get1DProjections(projections);
 gproj1D=gpuArray(proj1D);

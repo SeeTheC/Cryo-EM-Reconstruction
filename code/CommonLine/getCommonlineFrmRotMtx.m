@@ -1,17 +1,22 @@
-function [S,phi] = ASINGER2011_GetS_TESTFun(trueRot)
-    %% INIT
-    %trueRot=permute(trueRot,[2 1 3]);
-    N=size(trueRot,3);
+% Finds the commonline using the Projection Rotation matrix
+% For Maths Refer Amit S. Paper
+% Paper: Three-Dimensional Structure Determination from Common Lines in Cryo-EM by
+% Eigenvectors and Semidefinite Programming, 2011
+% Section: Experiment
+% Author: Khursheed Ali
+function [phiDeg,S,phi] = getCommonlineFrmRotMtx(rotMtx)
+    %% INIT    
+    N=size(rotMtx,3);
     S=[];
     %% Process
     x = zeros(N,N);
     y = zeros(N,N);
     phi = zeros(N,N);
     for i=1:N
-        Ri=trueRot(:,:,i); 
+        Ri=rotMtx(:,:,i); 
         Rit=Ri';
         for j=1+i:N         
-            Rj=trueRot(:,:,j);
+            Rj=rotMtx(:,:,j);
             tc=cross(Ri(:,3),Rj(:,3));
             tc(abs(tc)<10^-9)=0;%making near to zero a zero            
             tc=tc./norm(tc);
@@ -27,6 +32,9 @@ function [S,phi] = ASINGER2011_GetS_TESTFun(trueRot)
             end
         end
     end
+    
+    phiDeg=round((phi+(pi)).*(180/pi));
+    phiDeg(1:1+size(phi,1):end) = 0;
     %% Assembling S
     S11= x.*x'; S12=x.*y';
     S21= y.*x'; S22=y.*y';

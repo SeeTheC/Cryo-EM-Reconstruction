@@ -7,7 +7,8 @@ function [geo,padding] = getProjGeometry(objDim)
         dsize=dsize-1;
     end
     objDim=objDim+padding;
-    %dsize=objDim(1);
+    %objDim=objDim;    
+    %dsize=objDim(1)+10;
     %% Config
     % VARIABLE                                   DESCRIPTION                    UNITS
     %-------------------------------------------------------------------------------------

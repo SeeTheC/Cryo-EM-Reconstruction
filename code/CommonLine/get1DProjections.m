@@ -1,13 +1,13 @@
 % Return the 1D randon of the 2D image
-function [proj1D] = get1DProjections(projections)
+function [proj1D] = get1DProjections(projections,isGpu)
     %% INIT
     N= size(projections,3);    
     %N=10;% TEMP: DEBUG
-    angles=gpuArray([0:1:180-(1e-10)]); 
-    %a2=gpuArray([0:1:359]); 
-    % GPU Array init
-    projections=gpuArray(projections);    
-    
+    angles=[0:1:180-(1e-10)];
+    if nargin>1 && isGpu
+        angles=gpuArray(angles);     
+        projections=gpuArray(projections);    
+    end
     %% Process
     fprintf('Finding 1D prjections: %d ... \n',N);
     tic
