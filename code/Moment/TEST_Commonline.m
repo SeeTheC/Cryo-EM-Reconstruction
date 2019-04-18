@@ -482,7 +482,7 @@ fprintf('TEMP: Done.\n');
 
 %% Record Video
 clear F;
-trueObj=trueObjFBP;
+trueObj=em;
 reconstObj=reconstObjFBP;
 
 frameNo=1;
@@ -495,17 +495,17 @@ pause(5);
 
 minTrueClrVal=min(trueObj(:));maxTrueClrVal=max(trueObj(:));
 minRecontClrVal=min(reconstObj(:));maxRecontClrVal=max(reconstObj(:));
-for i=1:N      
+for i=64:64      
     subplot(1,2,1)
     %imshow(trueObj(:,:,i),[minTrueClrVal maxTrueClrVal]),colorbar;
     imshow(trueObj(:,:,i),[0 maxTrueClrVal]),colorbar; 
-    tstr=sprintf('\\fontsize{14}{\\color{black} TIGRE Reconst. Z:%d/%d}',i,N);
+    tstr=sprintf('\\fontsize{14}{\\color{black} True. Z:%d/%d}',i,N);
     title(tstr);
     
     subplot(1,2,2)
     %imshow(reconstObj(:,:,i),[minRecontClrVal maxRecontClrVal]),colorbar;
     imshow(reconstObj(:,:,i),[0 maxTrueClrVal]),colorbar;    
-    tstr=sprintf('\\fontsize{14}{\\color{magenta} AMIT.S Reconst. Z:%d/%d}',i,N);
+    tstr=sprintf('\\fontsize{14}{\\color{magenta} Reconstructed Z:%d/%d}',i,N);
     title(tstr);
     %pause(0.5);
     F(frameNo)=getframe(fig2);frameNo=frameNo+1;

@@ -17,19 +17,20 @@ cd('../../lib/CERN-TIGRE/MATLAB');
 funInitTIGRE();
 cd(callPath); 
 %% Config 1: File Path
-dataNum = 1050;
+dataNum = 8647;
 maxNumProj=20000;
 downspample=1;
 noisePercent=50;
-suffix='';
-timestamp=datestr(now,'dd-mm-yyyy-HH_MM_SS');
-emBasepath=strcat(basepath,'/',num2str(dataNum),suffix);
 
-parentPath=strcat(emBasepath,'/Projection_',num2str(dataNum));
+timestamp=datestr(now,'dd-mm-yyyy-HH_MM_SS');
+emBasepath=strcat(basepath,'/',num2str(dataNum));
+
+suffix='_Td2';
+parentPath=strcat(emBasepath,'/Projection_',num2str(dataNum),suffix);
 parentImgDir=strcat(parentPath,'/img');
 parentRawImgDir=strcat(parentPath,'/raw_img');
 
-savepath=strcat(emBasepath,'/Projection_',num2str(dataNum),'_GaussainNoise_percent_',num2str(noisePercent),'_',timestamp); 
+savepath=strcat(emBasepath,'/Projection_',num2str(dataNum),suffix,'_GaussainNoise_percent_',num2str(noisePercent),'_',timestamp); 
 savedImgDir=strcat(savepath,'/img');
 savedRawImgDir=strcat(savepath,'/raw_img');
 

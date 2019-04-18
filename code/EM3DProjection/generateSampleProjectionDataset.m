@@ -19,7 +19,7 @@ funInitTIGRE();
 cd(callPath); 
 
 %% Config 1: Reading Emd virus
- dataNum = 8647;
+ dataNum = 1050;
  datasetName=num2str(dataNum);
  datasetPath='~/git/Dataset/EM';
  if(dataNum==1003)
@@ -72,7 +72,19 @@ cd(callPath);
  em(em<0)=0;
  emDim=size(em)'; 
  fprintf('Dataset:%d Dim:%dx%dx%d\n',dataNum,emDim(1),emDim(2),emDim(3));
-  
+%% CROPPING
+I=em(:,:,40);
+[H,W]=size(I);
+radius=18;
+x1=ceil(H/2-radius);
+y1=ceil(W/2-radius);
+I2 = imcrop(I,[y1 x1 radius*2 radius*2]);
+imshow(I2,[]);
+%% Croping object
+[em] = imcrop3D(em,20);
+%%
+downsample=2;
+em=imresize3(em,1/downsample);
 %% Config 2: Set Save Paths
 suffix='';
 timestamp=datestr(now,'dd-mm-yyyy-HH_MM_SS');
@@ -93,32 +105,6 @@ fid = fopen(strcat(savepath,'/0_info.txt'), 'a+');
 fprintf(fid, 'img_no \t min_val \tmax_val \t ang_x \t ang_y \t ang_z \n');
 
 %% Taking Projection
-
-%% Define Geometry
-% 
-% VARIABLE                                   DESCRIPTION                    UNITS
-%-------------------------------------------------------------------------------------
-%geo.DSD = 1536;                             % Distance Source Detector     (mm)
-geo.DSD = 1000;                             % Distance Source Detector      (mm)
-geo.DSO = 500;                             % Distance Source Origin        (mm)
-% Detector parameters
-geo.nDetector=[128; 128];					% number of pixels              (px)
-geo.dDetector=[1; 1]; 					% size of each pixel            (mm)
-geo.sDetector=geo.nDetector.*geo.dDetector; % total size of the detector    (mm)
-% Image parameters
-geo.nVoxel=emDim;                           % number of voxels              (vx)
-geo.sVoxel=emDim;                           % total size of the image       (mm)
-geo.dVoxel=geo.sVoxel./geo.nVoxel;          % size of each voxel            (mm)
-% Offsets
-geo.offOrigin =[0;0;0];                     % Offset of image from origin   (mm)              
-geo.offDetector=[0; 0];                     % Offset of Detector            (mm)
-
-% Auxiliary 
-geo.accuracy=0.5;                           % Accuracy of FWD proj          (vx/sample)
-
-% Projection Type : parallel/cone
-geo.mode='parallel';
-plotgeometry(geo,-pi); 
 
 %% Projection Angles 1
 % define projection angles (in radians)
@@ -142,13 +128,14 @@ end
 %z=[0,0,pi/2,pi/2,0,pi/2];
 %angles=[x;y;z];   
 %% Projection Angles 2: Guassian Distribution & quternion
-noOfAngles=20000;
+noOfAngles=1000;
 quternion=randn(noOfAngles,4);
 quternion=quternion./sqrt(sum(quternion.^2,2));
 for i=1:noOfAngles
-    [a,b,c]=quat2angle(quternion(i,:),'ZYZ');
-    angles(:,i)=[a,b,c]';
+    rotMtx=quat2rotm(quternion(i,:));
+    rots_true(:,:,i)=rotMtx;
 end
+angles=rotm2eul(rots_true)';
 %% Projection Angles 3: Manual Angles with only 90deg rotation
 
 x=[0,0,0,0,pi/2,pi/2];
@@ -178,7 +165,7 @@ angles=angles';
 %% Take projection: USING TIGRE
 fprintf('Taking projection...\n');
 tic
-projections=Ax(em,geo,angles,'interpolated');
+projections=takeProjectionWraper(em,rots_true);
 toc
 fprintf('Done\n');
 % Plot Projections
@@ -191,7 +178,7 @@ tic
 n=10000;
 rots_true = rand_rots(n);
 angles=rotm2eul(rots_true)';
-%save(strcat(savepath,'/rots_true.mat'),'angles');
+save(strcat(savepath,'/rots_true.mat'),'rots_true');
 
 fprintf('Taking projection...\n');
 
@@ -203,7 +190,7 @@ toc
 %% Save Projection
 N=size(projections,3);
 fprintf('Saving total Projections: %d ...\n',N);
-fprintf(fid,'NOTE: Projections are taken from ASPIRE');
+%fprintf(fid,'NOTE: Projections are taken from ASPIRE');
 
 %fig3=figure('units','normalized','outerposition',[0 0 1 1]);
 for i=1:N          
@@ -222,6 +209,7 @@ for i=1:N
     
 end
 save(strcat(savepath,'/angles.mat'),'angles');
+save(strcat(savepath,'/rots_true.mat'),'rots_true');
 fprintf('Done\n');
 fclose(fid);
 

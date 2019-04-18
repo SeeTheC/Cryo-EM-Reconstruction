@@ -32,11 +32,11 @@ function [projections] = takeProjections(obj,angles)
     % Projection Type : parallel/cone
     geo.mode='parallel';
     %% Projection
-    fprintf('Taking projection...\n');
-    tic
+    %fprintf('Taking projection...\n');
+    %tic
     projections=Ax(obj,geo,angles,'interpolated');
-    toc
-    fprintf('Done\n');
+    %toc
+    %fprintf('Done\n');
     %% Resettig GPU DEVICE
     gpuDevice(1);
 end

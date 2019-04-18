@@ -20,7 +20,7 @@ end
 
 
 %% Config
-dataNum = 8647;
+dataNum = 1050;
 datasetName=num2str(dataNum);
  datasetPath='~/git/Dataset/EM';
  if(dataNum==1003)
@@ -28,22 +28,28 @@ datasetName=num2str(dataNum);
     em = mapReader(emFile);
  end
  if(dataNum==5693) 
+    % Percentage of correct common lines: 84.961335
     emFile=strcat(datasetPath,'/EMD-5693','/map','/EMD-5693.map');
     em = mapReader(emFile);
  end
  if(dataNum==5689) 
+    % 192x192x192
+    % Percentage of correct common lines: 23.460053
     emFile=strcat(datasetPath,'/EMD-5689','/map','/EMD-5689.map');
     em = mapReader(emFile);
  end
  if(dataNum==5762) 
+    % Percentage of correct common lines: 32.103770%
     emFile=strcat(datasetPath,'/EMD-5762','/map','/EMD-5762.map');
     em = mapReader(emFile);
  end 
  if(dataNum==2222) 
+    % 128x128x128
     emFile=strcat(datasetPath,'/EMD-2222','/map','/EMD-2222.map');
     em = mapReader(emFile);
  end 
  if(dataNum==1050) 
+     %Percentage of correct common lines: 28.974619%
     emFile=strcat(datasetPath,'/EMD-1050','/map','/EMD-1050.map');
     em = mapReader(emFile);
  end 
@@ -65,14 +71,35 @@ datasetName=num2str(dataNum);
     em=em.volref;
     em=single(em);
  end
+ if(dataNum==1235) 
+     % 56x56x56
+     % Percentage of correct common lines: 9.013398%
+    emFile=strcat(datasetPath,'/EMD-1235','/map','/EMD-1235.map');
+    em = mapReader(emFile);
+ end
+ if(dataNum==2111) 
+     % 54x54x54
+    emFile=strcat(datasetPath,'/EMD-2111','/map','/EMD-2111.map');
+    em = mapReader(emFile);
+ end
+ if(dataNum==4006) 
+     % 40x40x40
+    emFile=strcat(datasetPath,'/EMD-4006','/map','/EMD-4006.map');
+    em = mapReader(emFile);
+ end
+
 
  em(em<0)=0;
  emDim=size(em)'; 
  fprintf('Dataset:%d Dim:%dx%dx%d\n',dataNum,emDim(1),emDim(2),emDim(3));
- 
+ em=single(em);
+%% crop
+[em] = imcrop3D(em,20);
+ %% Down
+ em=imresize3(em,1/2);
 %% Take Projection
 % Projection Angles 2: Guassian Distribution & quternion
-noOfAngles=10000;
+noOfAngles=100;
 quternion=randn(noOfAngles,4);
 quternion=quternion./sqrt(sum(quternion.^2,2));
 for i=1:noOfAngles
@@ -84,7 +111,7 @@ maxNumProj=noOfAngles;
 %% Take Projections
 
 [projections] = takeProjectionWraper(em,trueRotMat);
-
+fprintf('Done\n');
 %% Find Common Line
 isGpu=true;
 [phi,error] = getCommonline(projections,isGpu);
@@ -112,15 +139,16 @@ R2*[cos(phi(2,1)*radian);sin(phi(2,1)*radian);0]
 
 %% Finding Global Rotation
 
-% rotsAligned = align_rots(predR,trueRotMat); % ASPIRE
+rotsAligned = align_rots(predR,trueRotMat); % ASPIRE
 
-[gobalRotMat] = getGlobalRotTransformation(trueRotMat,predR);
-[rotsAligned,angles] = transformRot(gobalRotMat,predR);
+%[gobalRotMat] = getGlobalRotTransformation(trueRotMat,predR);
+%[rotsAligned,angles] = transformRot(gobalRotMat,predR);
 
 %% Reconstruct
 
-[reconstObjFBP] = reconstructObjWarper(projections,rotsAligned,emDim);
+[reconstObjFBP] = reconstructObjWarper(projections,rotsAligned);
 figure, imshow3D(reconstObjFBP)
 
 %%
+[trueObjFBP] = reconstructObjWarper(projections,trueRotMat);
 

@@ -2,7 +2,7 @@
 % matrix
 % Author: Khursheed Ali
 
-function [tRot,ZYX] = transformRot(transformation,rot)
+function [ntRot,ZYX,tRot] = transformRot(transformation,rot)
     %% INIT
     N=size(rot,3);
     %% Transform
@@ -19,6 +19,6 @@ function [tRot,ZYX] = transformRot(transformation,rot)
         %}
         ZYX(:,i)=angles';
     end
-    tRot=eul2rotm(ZYX'); % Reconstruction FIX
+    ntRot=eul2rotm(ZYX'); % Reconstruction FIX
 end
 
