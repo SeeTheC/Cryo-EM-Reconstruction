@@ -23,13 +23,16 @@ if server
 else
     basepath='/media/khursheed/4E20CD3920CD2933/MTP';  
 end
+addpath(genpath('../../lib/BM3D'));
 
 
 %% Config 1: File Path
-dataNum = 8647;
-maxNumProj=100;
+dataNum = 5693
+maxNumProj=502;
 downspample=1;
-rmvNoise=false;
+rmvNoise=true;
+noiseRmvMethod=2; % 1: Wiener method 2: BM3D method
+
 %% Initiatation of working director 
 fprintf('Initiatation of working director..\n');
 
@@ -38,6 +41,7 @@ timestamp=datestr(now,'dd-mm-yyyy-HH_MM_SS');
 emBasepath=strcat(basepath,'/',num2str(dataNum),suffix);
 
 parentPath=strcat(emBasepath,'/Projection_',num2str(dataNum),'_Td2_GaussainNoise_percent_50');
+%parentPath=strcat(emBasepath,'/Projection_',num2str(dataNum),'_Td2');
 
 parentImgDir=strcat(parentPath,'/img');
 parentRawImgDir=strcat(parentPath,'/raw_img');
@@ -57,8 +61,10 @@ datasetName=num2str(dataNum);
     em = mapReader(emFile);
  end
  if(dataNum==5693) 
+     % 96x96x96
     emFile=strcat(datasetPath,'/EMD-5693','/map','/EMD-5693.map');
     em = mapReader(emFile);
+    em=imresize3(em,1/2);
  end
  if(dataNum==5689) 
     emFile=strcat(datasetPath,'/EMD-5689','/map','/EMD-5689.map');
@@ -104,7 +110,7 @@ fprintf('Dataset:%d Dim:%dx%dx%d\n',dataNum,emDim(1),emDim(2),emDim(3));
 %% Croping object
 % [em] = imcrop3D(em,20);
 %% down
- %em=imresize3(em,1/2);
+ % em=imresize3(em,1/2);
 %% Read Projections
 
 % Assuming Projections are take from ASPIRE;
@@ -115,9 +121,14 @@ rots_true=load(strcat(parentPath,'/rots_true.mat'));
 rots_true=rots_true.rots_true;
 rots_true=rots_true(:,:,1:size(projections,3));
 angles_true=[];
-if rmvNoise
+if rmvNoise && noiseRmvMethod==1
     fprintf('Reducing Noise using wiener filter...\n');
     [projections]=rmvNoiseWithWiener(projections);
+    fprintf('Done\n');
+
+elseif rmvNoise && noiseRmvMethod==2
+    fprintf('Reducing Noise using BM3D filter...\n');
+    [projections]=rmvNoiseWithBM3D(projections);
     fprintf('Done\n');
 end
 %angles_true=load(strcat(parentPath,'/angles.mat'));

@@ -5,6 +5,7 @@
 % Date: 29th March 2019
 function [objFBP] = reconstructObjWarper(projections,rotMtx)
     %% Initial offset
+    projections=single(projections);
     % NOTE: THIS CONFIG IF FOUND OUT BY ANALYSING ASPIRE AND TIRGE TOOLBOX
     maxDim=max(size(projections,1),size(projections,2));
     emDim=[maxDim;maxDim;maxDim];

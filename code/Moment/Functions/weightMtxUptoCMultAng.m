@@ -27,7 +27,7 @@ function [BigAMtxCell] = weightMtxUptoCMultAng(angles,c)
     BigAMtxCell=cell(0,1);
     N=size(angles,1);
     parfor i=1:N
-        fprintf('i:%d\n',i);
+        %fprintf('i:%d\n',i);
         ax=angles(i,1);ay=angles(i,2);az=angles(i,3);
         BigAMtxCell{i,1}= AcPerAng([ax,ay,az],c,order2d,order3d);
     end

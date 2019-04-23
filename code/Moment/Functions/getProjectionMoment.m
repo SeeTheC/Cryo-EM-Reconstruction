@@ -3,7 +3,8 @@
 % Date: 23-09-2018
 function [projMomentCell] = getProjectionMoment(projections,momentOrder)
     %% 1. Init
-    noOfProj=size(projections,1);
+    noOfProj=size(projections,3);
+    projections = num2cell(projections,[1 2]);
     k=[0:momentOrder]';
     %% 2. Per Projection
     function [Pc] = perProjection(proj)  

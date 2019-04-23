@@ -1,6 +1,12 @@
 %% TO BE RUN AFTER Running Main
 %% Config
 clear all;
+addpath(genpath('../../lib/3dviewer'));
+addpath(genpath('../MapFileReader/'));
+addpath(genpath('../FileOperation'));
+addpath(genpath('../CommonFunctions'));
+addpath(genpath('FeatureExtraction/'));
+addpath(genpath('Clustering/'));
 server = 1;
 if server
     basepath='~/git/Cryp-EM/Cryo-EM-Reconstruction/code/data';
@@ -10,17 +16,34 @@ end
 
 
 % EM-8647 - downsample by 2 
-dirpath=strcat(basepath,'/8647/Projection_8647_Td2_GaussainNoise_percent_30/Result/proj501_soff10_itr20');
+%dirpath=strcat(basepath,'/8647/Projection_8647_Td2_GaussainNoise_percent_50/Result/rmvNoise_BM3D_proj503_soff10_iter30');
 
-% EM-1050 - downsample by 2 
-%dirpath=strcat(basepath,'/1050/Projection_1050_TCrp20/Result/proj500_soff10_itr20');
+% EM-1050 - crop by 2 
+%dirpath=strcat(basepath,'/1050/Projection_1050_TCrp20_GaussainNoise_percent_10/Result/proj500_soff10_iter_30');
+
+% EM-5693 - downsample by 2 
+dirpath=strcat(basepath,'/5693/Projection_5693_Td2_GaussainNoise_percent_50/Result/rmvNoise_BM3D_proj102_soff10_iter20');
 
 
-%% Read Result
+%% Final Result
 
 filepath=strcat(dirpath,'/final_result.mat');
 s=load(filepath);
 fr=s.result;
+
+
+%% CHECK POINT
+filepath=strcat(dirpath,'/result_chk.mat');
+s=load(filepath);
+chk=s.chk;
+
+align_rots(chk.R_est, chk.confi.rots_true); 
+[f_init]=reconstructObjWarper(chk.confi.projections,align_rots(chk.R_int, chk.confi.rots_true));
+[f_final]=reconstructObjWarper(chk.confi.projections,align_rots(chk.R_est, chk.confi.rots_true));
+
+fr.config.trueObj=chk.confi.trueObj;
+fr.f_init=f_init;
+fr.f_final=f_final;
 %% Record Video
 clear F;
 trueObj=fr.config.trueObj;

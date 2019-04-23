@@ -128,7 +128,7 @@ end
 %z=[0,0,pi/2,pi/2,0,pi/2];
 %angles=[x;y;z];   
 %% Projection Angles 2: Guassian Distribution & quternion
-noOfAngles=1000;
+noOfAngles=10000;
 quternion=randn(noOfAngles,4);
 quternion=quternion./sqrt(sum(quternion.^2,2));
 for i=1:noOfAngles

@@ -4,6 +4,8 @@
 % order : all the order such that k+l=n in  the same order as result in
 % moment
 % combined: [order, moment ]
+% Dev: Khursheed Ali
+% Date: 23-09-2018
 function [moment,order,combined] = nthCentralMoment2D(f,n)
     % 1. Finding all n order moment such that k+l=n
     [order] = gen2dOrderMoment(n);

@@ -17,7 +17,7 @@ cd('../../lib/CERN-TIGRE/MATLAB');
 funInitTIGRE();
 cd(callPath); 
 %% Config 1: File Path
-dataNum = 8647;
+dataNum = 5693;
 maxNumProj=20000;
 downspample=1;
 noisePercent=50;
