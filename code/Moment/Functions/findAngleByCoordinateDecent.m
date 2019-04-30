@@ -32,7 +32,7 @@ function [f_final,R_est,f_init,R_init] = findAngleByCoordinateDecent(config)
     toc;
     %% Coordinate Decent
     
-    [predAngles,netError]=coordinateDecent(projectionsMoment,R_init,searchArea,momentOrder,maxIteration);
+    [R_final,Im_final,An_final,error,iteration,ithError]=coordinateDecent(projectionsMoment,R_init,searchArea,momentOrder,maxIteration,config);
         
 end
 

@@ -16,13 +16,13 @@ end
 
 
 % EM-8647 - downsample by 2 
-%dirpath=strcat(basepath,'/8647/Projection_8647_Td2_GaussainNoise_percent_50/Result/rmvNoise_BM3D_proj503_soff10_iter30');
+%dirpath=strcat(basepath,'/8647/Projection_8647_Td2_GaussainNoise_percent_100/Result/rmvNoise_BM3D_proj502_soff10_iter20');
 
 % EM-1050 - crop by 2 
 %dirpath=strcat(basepath,'/1050/Projection_1050_TCrp20_GaussainNoise_percent_10/Result/proj500_soff10_iter_30');
 
 % EM-5693 - downsample by 2 
-dirpath=strcat(basepath,'/5693/Projection_5693_Td2_GaussainNoise_percent_50/Result/rmvNoise_BM3D_proj102_soff10_iter20');
+dirpath=strcat(basepath,'/5693/Projection_5693_Td2_GaussainNoise_percent_80/Result/rmvNoise_BM3D_proj102_soff10_iter20');
 
 
 %% Final Result
@@ -30,6 +30,27 @@ dirpath=strcat(basepath,'/5693/Projection_5693_Td2_GaussainNoise_percent_50/Resu
 filepath=strcat(dirpath,'/final_result.mat');
 s=load(filepath);
 fr=s.result;
+trueObj=fr.config.trueObj;
+initReconstObj=fr.f_init;
+myReconstObj=fr.f_final;
+
+% Calculate relative MSE of volume estimation.
+a=initReconstObj-trueObj;b=myReconstObj-trueObj;
+init_nrmse_vol = norm(a(:))/norm(trueObj(:))
+final_nrmse_vol = norm(b(:))/norm(trueObj(:))
+
+init_tnorm_nrmse_vol_ = tnorm(a)/tnorm(trueObj)
+final_tnorm_nrmse_vol = tnorm(b)/tnorm(trueObj)
+infoFH=fopen(strcat(dirpath,'/0_info.txt'),'a+');
+
+fprintf(infoFH,'\n3D obj Intial Estimate Relative MSE :%f\n',init_nrmse_vol);
+fprintf(infoFH,'3D obj Final Estimate Relative MSE :%f\n',final_nrmse_vol);
+
+fprintf(infoFH,'3D obj Intial Estimate Relative MSE (tnorm) :%f\n',init_tnorm_nrmse_vol_);
+fprintf(infoFH,'3D obj Final Estimate Relative MSE (tnorm):%f\n',final_tnorm_nrmse_vol);
+
+fclose(infoFH);
+
 
 
 %% CHECK POINT
@@ -44,11 +65,10 @@ align_rots(chk.R_est, chk.confi.rots_true);
 fr.config.trueObj=chk.confi.trueObj;
 fr.f_init=f_init;
 fr.f_final=f_final;
+%%
+
 %% Record Video
 clear F;
-trueObj=fr.config.trueObj;
-initReconstObj=fr.f_init;
-myReconstObj=fr.f_final;
 
 frameNo=1;
 N=size(myReconstObj,3);
@@ -86,7 +106,7 @@ for i=1:N
     %pause(0.5);
     F(frameNo)=getframe(fig2);frameNo=frameNo+1;
 end
-%% Record Video
+% Record Video
 %F2=[F1,F];
 F2=F;
 fprintf('Creating Video.\n');

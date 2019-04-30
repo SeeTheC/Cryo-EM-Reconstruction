@@ -31,8 +31,8 @@ close all;
 geo.DSD = 1536;                             % Distance Source Detector      (mm)
 geo.DSO = 1000;                             % Distance Source Origin        (mm)
 % Detector parameters
-geo.nDetector=[512; 512];					% number of pixels              (px)
-geo.dDetector=[0.8; 0.8]; 					% size of each pixel            (mm)
+geo.nDetector=[256; 256];					% number of pixels              (px)
+geo.dDetector=[1; 1]; 					% size of each pixel            (mm)
 geo.sDetector=geo.nDetector.*geo.dDetector; % total size of the detector    (mm)
 % Image parameters
 geo.nVoxel=[128;128;128];                   % number of voxels              (vx)
@@ -44,12 +44,22 @@ geo.offDetector=[0; 0];                     % Offset of Detector            (mm)
 
 
 % Auxiliary 
-geo.accuracy=0.5;                           % Accuracy of FWD proj          (vx/sample)
+geo.accuracy=1;                           % Accuracy of FWD proj          (vx/sample)
 geo.mode='parallel';
 %% Load data and generate projections 
 % define angles
 angles=linspace(0,2*pi,100);
-% Load thorax phatom data
+%%
+rng(1)
+noOfAngles=5000;
+quternion=randn(noOfAngles,4);
+quternion=quternion./sqrt(sum(quternion.^2,2));
+for i=1:noOfAngles
+    rotMtx=quat2rotm(quternion(i,:));
+    rots_true(:,:,i)=rotMtx;
+end
+angles=rotm2eul(rots_true)';
+%% Load thorax phatom data
 head=headPhantom(geo.nVoxel);
 % generate projections
 projections=Ax(head,geo,angles,'interpolated');
@@ -59,7 +69,7 @@ noise_projections=addCTnoise(projections);
 %% Reconstruct image using OS-SART and FDK
 
 % FDK
-imgFDK=FDK(noise_projections,geo,angles);
+imgFDK=FDK(projections,geo,angles);
 % OS-SART
 
 niter=50;

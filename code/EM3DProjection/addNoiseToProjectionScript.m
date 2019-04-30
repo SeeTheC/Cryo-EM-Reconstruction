@@ -18,9 +18,9 @@ funInitTIGRE();
 cd(callPath); 
 %% Config 1: File Path
 dataNum = 5693;
-maxNumProj=20000;
+maxNumProj=1000;
 downspample=1;
-noisePercent=50;
+noisePercent=80;
 
 timestamp=datestr(now,'dd-mm-yyyy-HH_MM_SS');
 emBasepath=strcat(basepath,'/',num2str(dataNum));

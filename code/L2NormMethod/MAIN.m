@@ -28,7 +28,7 @@ addpath(genpath('../../lib/BM3D'));
 
 %% Config 1: File Path
 dataNum = 5693
-maxNumProj=502;
+maxNumProj=102;
 downspample=1;
 rmvNoise=true;
 noiseRmvMethod=2; % 1: Wiener method 2: BM3D method
@@ -40,7 +40,7 @@ suffix='';
 timestamp=datestr(now,'dd-mm-yyyy-HH_MM_SS');
 emBasepath=strcat(basepath,'/',num2str(dataNum),suffix);
 
-parentPath=strcat(emBasepath,'/Projection_',num2str(dataNum),'_Td2_GaussainNoise_percent_50');
+parentPath=strcat(emBasepath,'/Projection_',num2str(dataNum),'_Td2_GaussainNoise_percent_80');
 %parentPath=strcat(emBasepath,'/Projection_',num2str(dataNum),'_Td2');
 
 parentImgDir=strcat(parentPath,'/img');
@@ -142,7 +142,7 @@ config.maxNumProj=maxNumProj;
 config.downspample=downspample;
 config.parentPath=parentPath;
 config.maxIteration=20;
-config.searchOffest=10; % In degree example: +/- 10 deg 
+config.searchOffest=15; % In degree example: +/- 10 deg 
 config.savepath=savepath;
 config.projections=projections;
 config.rots_true=rots_true; % For finding Final error in Reconstruction
