@@ -1,9 +1,10 @@
-% Given function "f" and "n", it returns the all moment such that k+l=2
+% Given function "f" and "n", it returns the all moment such that k+l=n
 % Return:
 % moment: moments
 % order : all the order such that k+l=n in  the same order as result in
 % moment
 % combined: [order, moment ]
+% Author: Khursheed Ali
 function [moment,order,combined] = nthCentralMoment3D(f,n)
     % 1. Finding all n order moment such that k+l=n
     [order] = gen3dOrderMoment(n);

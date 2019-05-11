@@ -38,6 +38,6 @@ function [projections] = takeProjections(obj,angles)
     %toc
     %fprintf('Done\n');
     %% Resettig GPU DEVICE
-    gpuDevice(1);
+    setGPUDevice()
 end
 

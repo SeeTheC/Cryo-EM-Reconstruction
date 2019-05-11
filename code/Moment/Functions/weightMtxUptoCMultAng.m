@@ -53,10 +53,9 @@ function [AMtxCell] = AcPerAng(angles,c,order2d,order3d)
 end
 
 function [AMtx] = A(angles,order2d,order3d)    
-    %% INIT
-    TIGER_PROJECTION_YANGLE_FIX=-pi/2;    
+    %% INIT    
     ax=angles(1);ay=angles(2);az=angles(3);    
-    Ri=rotationMatrix(ax,ay+TIGER_PROJECTION_YANGLE_FIX,az);    
+    Ri=rotationMatrix(ax,ay,az);    
     %% Finding weights
     AMtx=zeros(size(order2d,1),size(order3d,1));
     for i=1:size(order2d,1)

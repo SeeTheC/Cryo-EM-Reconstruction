@@ -11,7 +11,9 @@ addpath(genpath('../CommonFunctions'));
 addpath(genpath('../CommonLine/'));
 addpath(genpath('Functions/'));
 callPath=pwd;
-cd('../../lib/CERN-TIGRE/MATLAB'); 
+%cd('../../lib/CERN-TIGRE/MATLAB'); 
+cd('../../lib/CERN-TIGRE-Cuda-10.1/MATLAB'); 
+
 funInitTIGRE();
 cd(callPath); 
 server = 1;
@@ -25,7 +27,7 @@ addpath(genpath('../../lib/BM3D'));
 
 %% Config 1: File Path
 dataNum = 8647
-maxNumProj=100;
+maxNumProj=50;
 downspample=1;
 rmvNoise=false;
 noiseRmvMethod=2; % 1: Wiener method 2: BM3D method
@@ -132,8 +134,8 @@ config.maxNumProj=maxNumProj;
 config.downspample=downspample;
 config.parentPath=parentPath;
 config.momentOrder=10;
-config.maxIteration=20;
-config.searchOffest=10; % In degree example: +/- 10 deg 
+config.maxIteration=10;
+config.searchOffest=5; % In degree example: +/- 10 deg 
 config.savepath=savepath;
 config.projections=projections;
 config.rots_true=rots_true; % For finding Final error in Reconstruction
@@ -147,9 +149,75 @@ config.finalSavePath=finalSavePath;
 fprintf('Done\n');
 
 %% Reconstruct
-[f_final,R_est,f_init,R_init] = findAngleByCoordinateDecent(config);
+[f_final,R_est,f_init,R_init,iteration] = findAngleByCoordinateDecent(config);
+fprintf('Finding Angles completed.\n')
+
+% Saving Result
+G_init=reconstructObjWarper(projections,R_init);
+G_final=reconstructObjWarper(projections,R_est);
+P_init=takeProjectionWraper(G_init,R_init);
+P_final=takeProjectionWraper(G_final,R_est);
+%
+initL2Error=findL2Error(em,f_init);
+initCorr=corr3(em,f_init);
+finalL2Error=findL2Error(em,f_final);
+finalCorr=corr3(em,f_final);
+corr_error_init=findCorrelationError(projections,P_init);
+corr_error_final=findCorrelationError(projections,P_final);
+a=f_init-em;b=f_final-em;
+init_nrmse_vol = norm(a(:))/norm(em(:));
+final_nrmse_vol = norm(b(:))/norm(em(:));
+
+fprintf('Projection Init corr_error:%f\n',corr_error_init);
+fprintf('Projection Final corr_error:%f\n',corr_error_final);
+%fprintf('Projection cl_error:%f\n',cl_error);
+fprintf('3D obj Intial Estimate L2 Error:%f\n',initL2Error);
+fprintf('3D obj Intial Estimate Correaltion:%f\n',initCorr);
+fprintf('3D obj Final Estimate L2 Error:%f\n',finalL2Error);
+fprintf('3D obj Final Estimate Correaltion:%f\n',finalCorr);
+fprintf('3D obj Intial Estimate Relative MSE :%f\n',init_nrmse_vol);
+fprintf('3D obj Final Estimate Relative MSE :%f\n',final_nrmse_vol);
 
 
+
+% Saving Results
+
+infoFH=fopen(strcat(config.finalSavePath,'/0_info.txt'),'a+'); 
+fprintf(infoFH,'\n----------------[Final Result]---------------------\n]');
+fprintf(infoFH,'iteration:%f\n',iteration);
+fprintf(infoFH,'Projection init corr_error:%f\n',corr_error_init);
+fprintf(infoFH,'Projection final corr_error:%f\n',corr_error_final);
+fprintf(infoFH,'3D obj Intial Estimate L2 Error:%f\n',initL2Error);
+fprintf(infoFH,'3D obj Intial Estimate Correaltion:%f\n',initCorr);
+fprintf(infoFH,'3D obj Final Estimate L2 Error:%f\n',finalL2Error);
+fprintf(infoFH,'3D obj Final Estimate Correaltion:%f\n',finalCorr);
+fprintf(infoFH,'\n3D obj Intial Estimate Relative MSE :%f\n',init_nrmse_vol);
+fprintf(infoFH,'3D obj Final Estimate Relative MSE :%f\n',final_nrmse_vol);
+
+fclose(infoFH);
+
+
+%finalSaveBP=strcat('../Result/L2Norm'); 
+%finalSavePath=strcat(savepath,'/',timestamp);
+mkdir(finalSavePath);
+result=struct;
+result.G_final=G_final;
+result.f_final=f_final;
+result.R_est=R_est;
+result.corr_error_int=corr_error_init;
+result.corr_error_final=corr_error_final;
+result.G_init=G_init;
+result.f_init=f_init;
+result.R_init=R_init;
+%result.cl_error=cl_error;
+result.iteration=iteration;
+result.initL2Error=initL2Error;
+result.initCorr=initCorr;
+result.finalL2Error=finalL2Error;
+result.finalCorr=finalCorr;
+result.config=config;
+
+save(strcat(finalSavePath,'/final_result.mat'),'result');
 
 
 

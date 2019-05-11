@@ -1,6 +1,6 @@
 % Dev: Khursheed Ali
 % Date: 22-04-2019
-function [f_final,R_est,f_init,R_init] = findAngleByCoordinateDecent(config)
+function [f_final,R_est,f_init,R_init,iteration] = findAngleByCoordinateDecent(config)
     %% Input
     projections=config.projections;
     momentOrder=config.momentOrder;
@@ -32,8 +32,13 @@ function [f_final,R_est,f_init,R_init] = findAngleByCoordinateDecent(config)
     toc;
     %% Coordinate Decent
     
-    [R_final,Im_final,An_final,error,iteration,ithError]=coordinateDecent(projectionsMoment,R_init,searchArea,momentOrder,maxIteration,config);
+    %[R_est,Im_final,An_final,error,iteration,ithError]=coordinateDecent(projectionsMoment,R_init,searchArea,momentOrder,maxIteration,config);
+    [R_est,Im_final,An_final,error,iteration,ithError]=coordinateDecentFast(projectionsMoment,R_init,searchArea,momentOrder,maxIteration,config);
         
+    rots_final_aligned = align_rots(R_est, config.rots_true);                
+    %[gobalRotMat] = getGlobalRotTransformation(rots_true,R_est);
+    %[~,~,rots_final_aligned] = transformRot(gobalRotMat,R_est);
+    [f_final] = reconstructObjWarper(projections,rots_final_aligned);    
 end
 
 

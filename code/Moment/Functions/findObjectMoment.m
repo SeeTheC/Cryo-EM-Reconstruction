@@ -14,11 +14,7 @@ function [Im,An,AcH,AcW] = findObjectMoment(Pn,bigA,momentOrder,noOfProj)
     % c: moment order
     W=(momentOrder+1)*(momentOrder+2)*(momentOrder+3)*(1/6);    
    %% Assemble bigA  See Eq 18
-   for i=1:noOfProj
-       % Eq 18        
-       Ac=getAc(bigA{i},momentOrder);      
-       An=vertcat(An,Ac);
-   end
+   [An] = mergeBigA(bigA,momentOrder);
    %% Finding IM
    [AcH,AcW]=size(Ac);
    Im=inv(An'*An)*An'*Pn;

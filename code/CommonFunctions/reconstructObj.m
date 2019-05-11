@@ -39,5 +39,7 @@ function [objFBP] = reconstructObj(projections,angles,emDim)
     %error=em-imgFDK;
     toc
     fprintf('Done\n');
+    %% Reset GPU Device
+    setGPUDevice();
 end
 
