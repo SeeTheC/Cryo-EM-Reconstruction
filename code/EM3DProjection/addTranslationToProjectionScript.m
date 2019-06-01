@@ -1,4 +1,4 @@
-%% Add noise to projection
+%% Add Translation Error to projection
 %% INIT - Reading Data Set
 clear all;
 addpath(genpath('../../lib/3dviewer'));
@@ -17,20 +17,20 @@ cd('../../lib/CERN-TIGRE/MATLAB');
 funInitTIGRE();
 cd(callPath); 
 %% Config 1: File Path
-dataNum = 4138;
+dataNum = 8647;
 maxNumProj=1005;
 downspample=1;
-noisePercent=10;
+maxTransError=5;% in pixels
 
 timestamp=datestr(now,'dd-mm-yyyy-HH_MM_SS');
 emBasepath=strcat(basepath,'/',num2str(dataNum));
 
-suffix='_Crp86';
+suffix='_Td2';
 parentPath=strcat(emBasepath,'/Projection_',num2str(dataNum),suffix);
 parentImgDir=strcat(parentPath,'/img');
 parentRawImgDir=strcat(parentPath,'/raw_img');
 
-savepath=strcat(emBasepath,'/Projection_',num2str(dataNum),suffix,'_GaussainNoise_percent_',num2str(noisePercent),'_',timestamp); 
+savepath=strcat(emBasepath,'/Projection_',num2str(dataNum),suffix,'_trans_error',num2str(maxTransError),'_',timestamp); 
 savedImgDir=strcat(savepath,'/img');
 savedRawImgDir=strcat(savepath,'/raw_img');
 
@@ -46,16 +46,16 @@ projections=loadProjections(parentRawImgDir,maxNumProj,downspample);
 
 %% Add noise and Save
 N=size(projections,3);
-fprintf('Adding Nosie ...\n');
-avgInt=projections(projections>0);
-avgInt=mean(avgInt);
-sigma=avgInt*noisePercent/100
+fprintf('Adding Translation error ...\n');
+trans_error=[];
 for i=1:N
     p=projections(:,:,i);        
-    [m,n]=size(p);
-    noise=guassainNoise(m,n,sigma);
-    img=p+noise;
-    
+    [m,n]=size(p);    
+    xError=randi([(-1*maxTransError) maxTransError]);
+    yError=randi([(-1*maxTransError) maxTransError]);
+    fprintf('i:%d\t xerror:%d\t yerror:%d\n',i,xError,yError);
+    img=imtranslate(p,[xError,yError]);
+    trans_error=[trans_error;xError,yError];
     % saving raw img
     save(strcat(savedRawImgDir,'/',num2str(i),'.mat'),'img');    
     maxValue=max(img(:)); 
@@ -66,4 +66,5 @@ for i=1:N
     % writing to file
     
 end
+save(strcat(savepath,'/trans_error.mat'),'trans_error');
 fprintf('Done.\n');

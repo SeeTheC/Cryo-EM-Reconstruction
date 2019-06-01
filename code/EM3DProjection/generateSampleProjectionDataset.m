@@ -1,7 +1,7 @@
 %% Generate Sample projection from the 3D structure ans the projections
 %% INIT - Reading Data Set
 clear all;
-addpath(genpath('../../lib/aspire-v0.14-0'));
+%addpath(genpath('../../lib/aspire-v0.14-0'));
 addpath(genpath('../CommonFunctions'));
 % EMD 3D Projection -  Init
 addpath(genpath('../../lib/3dviewer'));
@@ -19,12 +19,27 @@ funInitTIGRE();
 cd(callPath); 
 
 %% Config 1: Reading Emd virus
- dataNum = 1050;
+ dataNum = 4138;
  datasetName=num2str(dataNum);
  datasetPath='~/git/Dataset/EM';
- if(dataNum==1003)
-    emFile=strcat(datasetPath,'/EMD-1003','/map','/emd_1003.map'); 
+  if(dataNum==1003)
+        emFile=strcat(datasetPath,'/EMD-1003','/map','/emd_1003.map'); 
+        em = mapReader(emFile);
+  end
+  if(dataNum==4138)
+    % Dataset:4138 Dim:161x161x161
+    % Percentage of correct common lines: 54.669379%
+    emFile=strcat(datasetPath,'/EMD-4138','/map','/EMD-4138.map'); 
     em = mapReader(emFile);
+    [em] = imcrop3D(em,80);
+  end
+  if(dataNum==2451) 
+    % Dim:220x220x220
+    % Percentage of correct common lines: 72.144166%
+    emFile=strcat(datasetPath,'/EMD-2451','/map','/EMD-2451.map');
+    em = mapReader(emFile);
+    %em=imresize3(em,1/2);
+    %[em] = imcrop3D(em,36);
  end
  if(dataNum==5693) 
     emFile=strcat(datasetPath,'/EMD-5693','/map','/EMD-5693.map');
@@ -128,7 +143,7 @@ end
 %z=[0,0,pi/2,pi/2,0,pi/2];
 %angles=[x;y;z];   
 %% Projection Angles 2: Guassian Distribution & quternion
-noOfAngles=10000;
+noOfAngles=1005;
 quternion=randn(noOfAngles,4);
 quternion=quternion./sqrt(sum(quternion.^2,2));
 for i=1:noOfAngles

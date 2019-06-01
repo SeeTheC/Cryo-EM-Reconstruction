@@ -17,6 +17,7 @@ end
 
 % EM-8647 - downsample by 2 
 %dirpath=strcat(basepath,'/8647/Projection_8647_Td2_GaussainNoise_percent_100/Result/rmvNoise_BM3D_proj502_soff10_iter20');
+dirpath=strcat(basepath,'/8647/Projection_8647_Td2_trans_error5/Result_Translation/proj100_onlyMyAlgo_rs10_ts2_iter10');
 
 % EM-1050 - crop by 2 
 %dirpath=strcat(basepath,'/1050/Projection_1050_TCrp20_GaussainNoise_percent_10/Result/proj500_soff10_iter_30');
@@ -25,7 +26,7 @@ end
 % dirpath=strcat(basepath,'/5693/Projection_5693_GaussainNoise_percent_80/Result/proj100_soff10_iter20');
 
 % EM-4138
-dirpath=strcat(basepath,'/4138/Projection_4138_Crp86_GaussainNoise_percent_100/Result/rmvNoise_BM3D_proj502_soff10_iter20');
+%dirpath=strcat(basepath,'/4138/Projection_4138_Crp86_GaussainNoise_percent_100/Result/rmvNoise_BM3D_proj502_soff10_iter20');
 
 
 
@@ -87,20 +88,20 @@ minInit=min(initReconstObj(:));maxInit=max(initReconstObj(:));
 minMyVal=min(myReconstObj(:));maxMy=max(myReconstObj(:));
 
 for i=1:N      
-    subplot(1,3,1)
+    subplot(1,2,1)
     %imshow(trueObj(:,:,i),[minTrueClrVal maxTrueClrVal]),colorbar;
     imshow(trueObj(:,:,i),[0 maxTrue]),colorbar; 
     tstr=sprintf('\\fontsize{14}{\\color{black} True. Z:%d/%d}',i,N);
     title(tstr);
     
-    subplot(1,3,2)
-    %imshow(reconstObj(:,:,i),[minRecontClrVal maxRecontClrVal]),colorbar;
-    imshow(initReconstObj(:,:,i),[0 maxInit]),colorbar;    
-    tstr=sprintf('\\fontsize{14}{\\color{orange} Init-Estimate Z:%d/%d}',i,N);
-    title(tstr);
+    %subplot(1,3,2)
+    %%imshow(reconstObj(:,:,i),[minRecontClrVal maxRecontClrVal]),colorbar;
+    %imshow(initReconstObj(:,:,i),[0 maxInit]),colorbar;    
+    %tstr=sprintf('\\fontsize{14}{\\color{orange} Init-Estimate Z:%d/%d}',i,N);
+    %title(tstr);
     
     
-    subplot(1,3,3)
+    subplot(1,2,2)
     %imshow(reconstObj(:,:,i),[minRecontClrVal maxRecontClrVal]),colorbar;
     imshow(myReconstObj(:,:,i),[0 maxMy]),colorbar;    
     tstr=sprintf('\\fontsize{14}{\\color{magenta} Result Z:%d/%d}',i,N);

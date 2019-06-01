@@ -5,7 +5,18 @@ function [G_est,R_est,error,iteration] = L2OptAlgo1(projection,G_init,R_init,max
     p=projection;    
     n=size(p,3);
     G=G_init;
-    R_est=R_init;        
+    if config.loadFrmIntermCheck
+        fprintf('*****************************************************************\n');
+        fprintf('** WARNING: Loading Partial Result from intermediate Checkpoint**\n');
+        fprintf('*****************************************************************\n');
+        chkFPath=strcat(config.savepath,config.intermCheckPath,'/result_chk.mat');
+        cs=load(chkFPath);
+        chk=cs.chk;       
+        R_est=chk.R_est;
+        clear cs chk;        
+    else
+        R_est=R_init;                
+    end
     searchThershold=searchOffest; % x deg. means +/- x deg in x,y,z,axis    
     finalSavePath=config.finalSavePath;    
     

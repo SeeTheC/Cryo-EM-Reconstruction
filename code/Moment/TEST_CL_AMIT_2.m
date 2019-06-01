@@ -20,11 +20,30 @@ end
 
 
 %% Config
-dataNum = 1050;
+dataNum = 4138;
 datasetName=num2str(dataNum);
  datasetPath='~/git/Dataset/EM';
  if(dataNum==1003)
     emFile=strcat(datasetPath,'/EMD-1003','/map','/emd_1003.map'); 
+    em = mapReader(emFile);
+ end
+ if(dataNum==4138)
+    % Dataset:4138 Dim:161x161x161
+    % Percentage of correct common lines: 54.669379%
+    emFile=strcat(datasetPath,'/EMD-4138','/map','/EMD-4138.map'); 
+    em = mapReader(emFile);
+    [em] = imcrop3D(em,80);
+ end
+ if(dataNum==2451) 
+    % Dim:220x220x220
+    % Percentage of correct common lines: 72.144166%
+    emFile=strcat(datasetPath,'/EMD-2451','/map','/EMD-2451.map');
+    em = mapReader(emFile);
+ end
+ if(dataNum==5578)
+    % 400x400x400
+    % Percentage of correct common lines: 3.617151%
+    emFile=strcat(datasetPath,'/EMD-5578','/map','/EMD-5578.map');
     em = mapReader(emFile);
  end
  if(dataNum==5693) 
@@ -84,6 +103,7 @@ datasetName=num2str(dataNum);
  end
  if(dataNum==4006) 
      % 40x40x40
+     %  Percentage of correct common lines: 5.518361%
     emFile=strcat(datasetPath,'/EMD-4006','/map','/EMD-4006.map');
     em = mapReader(emFile);
  end
@@ -94,7 +114,7 @@ datasetName=num2str(dataNum);
  fprintf('Dataset:%d Dim:%dx%dx%d\n',dataNum,emDim(1),emDim(2),emDim(3));
  em=single(em);
 %% crop
-[em] = imcrop3D(em,20);
+[em] = imcrop3D(em,40);
  %% Down
  em=imresize3(em,1/2);
 %% Take Projection

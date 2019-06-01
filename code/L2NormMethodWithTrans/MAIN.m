@@ -28,13 +28,11 @@ addpath(genpath('../../lib/BM3D'));
 
 %% Config 1: File Path
 dataNum = 8647
-maxNumProj=500;
+maxNumProj=100;
 downspample=1;
-rmvNoise=false ;
+rmvNoise=false;
 noiseRmvMethod=2; % 1: Wiener method 2: BM3D method
-% Checkpointing : USE ONLY WHEN PROCESS IS KILLED IN BETWEEN
-loadFrmIntermCheck=false;
-intermCheckPath=''; % eg: intermCheckPath='/proj500_soff10_iter10';
+
 %% Initiatation of working director 
 fprintf('Initiatation of working director..\n');
 
@@ -42,13 +40,18 @@ suffix='';
 timestamp=datestr(now,'dd-mm-yyyy-HH_MM_SS');
 emBasepath=strcat(basepath,'/',num2str(dataNum),suffix);
 
-%parentPath=strcat(emBasepath,'/Projection_',num2str(dataNum),'_Crp86_GaussainNoise_percent_10');
-parentPath=strcat(emBasepath,'/Projection_',num2str(dataNum),'_Td2_GaussainNoise_percent_10');
 
-parentImgDir=strcat(parentPath,'/img');
+%parentPath=strcat(emBasepath,'/Projection_',num2str(dataNum),'_Crp86_GaussainNoise_percent_50');
+parentPath=strcat(emBasepath,'/Projection_',num2str(dataNum),'_Td2'); 
+parentImgDir=strcat(parentPath,'/img'); 
 parentRawImgDir=strcat(parentPath,'/raw_img');
 
-savepath=strcat(parentPath,'/Result'); 
+% translation Dataset Path
+parentTransPath=strcat(emBasepath,'/Projection_',num2str(dataNum),'_Td2_trans_error5');
+parentTransRawImgDir=strcat(parentTransPath,'/raw_img');
+
+
+savepath=strcat(parentTransPath,'/Result_Translation'); 
 finalSavePath=strcat(savepath,'/proj',num2str(maxNumProj),'_',timestamp);
     
 mkdir(savepath);
@@ -137,6 +140,13 @@ projections=loadProjections(parentRawImgDir,maxNumProj,downspample);
 rots_true=load(strcat(parentPath,'/rots_true.mat'));
 rots_true=rots_true.rots_true;
 rots_true=rots_true(:,:,1:size(projections,3));
+
+% loading Translation Error Projection
+trans_projections=loadProjections(parentTransRawImgDir,maxNumProj,downspample);
+trans_error_true=load(strcat(parentTransPath,'/trans_error.mat'));
+trans_error_true=trans_error_true.trans_error;
+trans_error_true=trans_error_true(1:size(trans_projections,3),:);
+
 angles_true=[];
 if rmvNoise && noiseRmvMethod==1
     fprintf('Reducing Noise using wiener filter...\n');
@@ -153,29 +163,30 @@ end
 %angles_true=load(strcat(parentPath,'/angles.mat'));
 %angles_true=angles_true.angles;
 %angles_true=angles_true(:,1:size(projections,3));
-
 %% Setting config parameter 
+
 fprintf('Setting config parameter..\n');
 config.dataNum=dataNum;
 config.maxNumProj=maxNumProj;
 config.downspample=downspample;
 config.parentPath=parentPath;
-config.maxIteration=20;
+config.maxIteration=10;
 config.searchOffest=10; % In degree example: +/- 10 deg 
 config.savepath=savepath;
 config.projections=projections;
 config.rots_true=rots_true; % For finding Final error in Reconstruction
 config.angles_true=angles_true; % For finding Final error in Reconstruction
+config.trans_projections=trans_projections; % used in Optimation method
+config.trans_error_true=trans_error_true;
+config.transSearchOffset=2; % Its +/- 5 pixel in both x and y
 config.timestamp=timestamp;
 config.isGpu=true;
 config.checkpointing=true; % Used of repeatitive computation on same dataset 
 config.checkpointpath=strcat(parentPath,'/temp');
 config.trueObj=em;
-config.loadFrmIntermCheck=loadFrmIntermCheck;
-config.intermCheckPath=intermCheckPath;
 config.finalSavePath=finalSavePath;
-
 fprintf('Done\n');
+
 %% Test ERROR
 % Result:
 % N=100 L2error:  0.3824
