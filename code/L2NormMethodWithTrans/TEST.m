@@ -16,11 +16,16 @@ fprintf('Done.\n');
 clear all;
 img1 = imresize(imread(which('cameraman.tif')),1/4);
 
-img1=padarray(img1,[19,19],'pre');
-img1=padarray(img1,[18,18],'post');
+img1=padarray(img1,[18,18]);
 
-img2 = imtranslate(img1,[10,-10]);
+%img1=padarray(img1,[19,19],'pre');
+%img1=padarray(img1,[18,18],'post');
+
+img2 = imtranslate(img1,[2,-3]);
 %%
+img1=pi_t;
+img2=pi_est(:,:,666);
+
 [h,w]=size(img1)
 [xx, yy] = meshgrid(ceil(-h/2):ceil(h/2-1),ceil(-w/2):ceil(w/2-1));
 
@@ -39,7 +44,7 @@ plot3(xx,yy,timg)
 [x,y]=ind2sub(size(timg),idx)
 fprintf('Tranlation x:%d y:%d\n',yy(y-1,1),xx(1,x-1));
 %%
-[x0,y0] = findTranslation(img1,img2)
+[x0,y0] = findTranslationCrossFourier(img1,img2)
 %%  TEST 3
 
 G=reconstructObjWarper(projections,rots_true);

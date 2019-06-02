@@ -17,15 +17,15 @@ cd('../../lib/CERN-TIGRE/MATLAB');
 funInitTIGRE();
 cd(callPath); 
 %% Config 1: File Path
-dataNum = 4138;
+dataNum = 8647;
 maxNumProj=1005;
 downspample=1;
-noisePercent=10;
+noisePercent=100;
 
 timestamp=datestr(now,'dd-mm-yyyy-HH_MM_SS');
 emBasepath=strcat(basepath,'/',num2str(dataNum));
 
-suffix='_Crp86';
+suffix='_Td2_trans_error5';
 parentPath=strcat(emBasepath,'/Projection_',num2str(dataNum),suffix);
 parentImgDir=strcat(parentPath,'/img');
 parentRawImgDir=strcat(parentPath,'/raw_img');

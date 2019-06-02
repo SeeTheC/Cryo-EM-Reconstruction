@@ -1,3 +1,5 @@
+% Author: Khursheed Ali
+% Date: 2nd June 2019
 function [G_est,R_est,trans_error_est,p_est,error,iteration] = L2OptWithTransAlgo1(projections,G_init,R_init,maxLoop,searchOffest,config)
     %% Config
     %trueObj=config.trueObj;  
@@ -8,64 +10,63 @@ function [G_est,R_est,trans_error_est,p_est,error,iteration] = L2OptWithTransAlg
     R_est=R_init;        
     searchThershold=searchOffest; % x deg. means +/- x deg in x,y,z,axis    
     finalSavePath=config.finalSavePath;    
-    transSearchOffset=config.transSearchOffset;
-    tmpTransProjCellPath=strcat(config.checkpointpath,'/proj_cell_n',num2str(n),'_offset',num2str(transSearchOffset),'.mat');
     %% Init
     %R_est=config.rots_true; %DEBUG
     %G=trueObj; % DEBUG
-                
     infoFP=strcat(finalSavePath,'/0_info.txt');
-    infoFH=fopen(infoFP,'a+');    
+    infoFH=fopen(infoFP,'a+');   
+    
+    fprintf('****************************************************\n');
+    fprintf('********* Algo 2: Cross Fourier Spectrum************\n');
+    fprintf('****************************************************\n');
+    fprintf(infoFH,'********* Algo 2: Cross Fourier Spectrum************\n');
+                
+     
     tmp_p_est=takeProjectionWraper(G,R_est);
     error=findCorrelationError(config.projections,tmp_p_est);    
     fprintf('Initial Correlation:%f\n',error); 
     fprintf(infoFH,'Initial Correlation:%f\n',error);     
     fprintf('Rotation Search offset:%f\n',searchOffest);
     fprintf(infoFH,'Rotation Search offset:%f\n',searchOffest);
-    fprintf('Translation Search offset:%f\n',transSearchOffset);
-    fprintf(infoFH,'Translation Search offset:%f\n',transSearchOffset);
     
     searchArea=getSearchSpace(searchThershold).*radian; 
-    searchAreaTrans=getSearchSpaceTrans(transSearchOffset);
       
+    
     %% Optimization
    
     timestamp=datestr(now,'dd-mm-yyyy HH:MM:SS');
     fprintf('%s\tOptimization started \n',timestamp);
     fprintf(infoFH,'%s\tOptimization started \n',timestamp);
     ithError(1)=error;      
-    trans_error_est=[];
+    trans_error_est=zeros(n,2);
     p_est=p_true;
     for i=1:maxLoop        
         %parfor pIdx=1:n
-        outPrintSize=0;
         changeCount=0;
-        [projectionCell] = addTranslationOnProj(p_est,searchAreaTrans);
+        
         for pIdx=1:n
             %fprintf(repmat('\b', 1, outPrintSize));
             %outPrintSize = fprintf('iter:%d p_idx:%d\n',i,pIdx);
             
-            r=R_est(:,:,pIdx);            
+            pi_t=p_est(:,:,pIdx);
+            r=R_est(:,:,pIdx);             
             ang=rotm2eul(r);
             angSearch=bsxfun(@plus,searchArea,[ang(1) ang(2) ang(3)]);
             rotSearch=eul2rotm(angSearch);
             pi_est=takeProjectionWraper(G,rotSearch);                        
-            transPiCell=projectionCell{pIdx};
-            % finding Rotation and Translation
-            %[idx,v] = findMinL2ErrorProj(pi_est,p(:,:,pIdx));
-            %[rotIdx,v] = findMaxCorrProj(pi_est,p_est(:,:,pIdx));
-            %[rotIdx,v] = findMaxCorrProj(pi_est,transPiCell{1});
             
-            %transIdx=1;
-            [transIdx,rotIdx,v] = findMaxCorrProjWithTrans(pi_est,transPiCell);
-            R_est(:,:,pIdx)=rotSearch(:,:,rotIdx);
-            p_est(:,:,pIdx)=transPiCell{transIdx};
-            trans_error_est(pIdx,:)=searchAreaTrans(transIdx,:);
+            % finding Rotation and Translation                        
+            [translation,trans_pi_est] = findTranslation(pi_t,pi_est);
+            [idx,v] = findMaxCorrProj(trans_pi_est,pi_t);
+            ith_trans_est=translation(idx,:);
+            R_est(:,:,pIdx)=rotSearch(:,:,idx);
+            p_est(:,:,pIdx)=imtranslate(pi_t,ith_trans_est*-1);
+            trans_error_est(pIdx,:)=trans_error_est(pIdx,:)+ith_trans_est;
             
-            if rotIdx~=ceil(size(rotSearch,3)/2) && transIdx~= ceil(size(searchAreaTrans,3)/2)
+            if idx~=ceil(size(rotSearch,3)/2)
                 changeCount=changeCount+1;
             end
-            fprintf('iter:%d p_idx:%d corr:%f rot_idx:%d trans_idx:%d\n',i,pIdx,v,rotIdx,transIdx);
+            fprintf('iter:%d p_idx:%d corr:%f idx:%d\n',i,pIdx,v,idx);
              
         end        
         G=reconstructObjWarper(p_est,R_est);

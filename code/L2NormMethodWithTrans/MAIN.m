@@ -42,16 +42,11 @@ emBasepath=strcat(basepath,'/',num2str(dataNum),suffix);
 
 
 %parentPath=strcat(emBasepath,'/Projection_',num2str(dataNum),'_Crp86_GaussainNoise_percent_50');
-parentPath=strcat(emBasepath,'/Projection_',num2str(dataNum),'_Td2'); 
+parentPath=strcat(emBasepath,'/Projection_',num2str(dataNum),'_Td2_trans_error5'); 
 parentImgDir=strcat(parentPath,'/img'); 
 parentRawImgDir=strcat(parentPath,'/raw_img');
 
-% translation Dataset Path
-parentTransPath=strcat(emBasepath,'/Projection_',num2str(dataNum),'_Td2_trans_error5');
-parentTransRawImgDir=strcat(parentTransPath,'/raw_img');
-
-
-savepath=strcat(parentTransPath,'/Result_Translation'); 
+savepath=strcat(parentPath,'/Result_Translation'); 
 finalSavePath=strcat(savepath,'/proj',num2str(maxNumProj),'_',timestamp);
     
 mkdir(savepath);
@@ -136,33 +131,44 @@ fprintf('Dataset:%d Dim:%dx%dx%d\n',dataNum,emDim(1),emDim(2),emDim(3));
 % Assuming Projections are take from ASPIRE;
 % fprintf('NOTE: Assuming Projections are take from ASPIRE.\n');
 
-projections=loadProjections(parentRawImgDir,maxNumProj,downspample);
-rots_true=load(strcat(parentPath,'/rots_true.mat'));
-rots_true=rots_true.rots_true;
-rots_true=rots_true(:,:,1:size(projections,3));
-
 % loading Translation Error Projection
-trans_projections=loadProjections(parentTransRawImgDir,maxNumProj,downspample);
-trans_error_true=load(strcat(parentTransPath,'/trans_error.mat'));
+trans_projections=loadProjections(parentRawImgDir,maxNumProj,downspample);
+
+trans_error_true=load(strcat(parentPath,'/trans_error.mat'));
 trans_error_true=trans_error_true.trans_error;
 trans_error_true=trans_error_true(1:size(trans_projections,3),:);
 
+rots_true=load(strcat(parentPath,'/rots_true.mat'));
+rots_true=rots_true.rots_true;
+rots_true=rots_true(:,:,1:size(trans_projections,3));
+
+%angles_true=load(strcat(parentPath,'/angles.mat'));
+%angles_true=angles_true.angles;
+%angles_true=angles_true(:,1:size(trans_projections,3));
+
 angles_true=[];
 if rmvNoise && noiseRmvMethod==1
-    fprintf('Reducing Noise using wiener filter...\n');
-    [projections]=rmvNoiseWithWiener(projections);
-    saveProjections(projections,parentPath,20,'Wiener');
+    fprintf('Reducing Noise using wiener filter...\n');    
+    [trans_projections]=rmvNoiseWithWiener(trans_projections);    
+    saveProjections(trans_projections,parentPath,20,'Wiener');
     fprintf('Done\n');
 
 elseif rmvNoise && noiseRmvMethod==2
-    fprintf('Reducing Noise using BM3D filter...\n');
-    [projections]=rmvNoiseWithBM3D(projections);
-    saveProjections(projections,parentPath,20,'BM3D');
+    fprintf('Reducing Noise using BM3D filter...\n');    
+    [trans_projections]=rmvNoiseWithBM3D(trans_projections);
+    saveProjections(trans_projections,parentPath,20,'BM3D');
     fprintf('Done\n');
 end
-%angles_true=load(strcat(parentPath,'/angles.mat'));
-%angles_true=angles_true.angles;
-%angles_true=angles_true(:,1:size(projections,3));
+
+
+% True Projections
+fprintf('Loading True Projection with No-Translation error...\n');
+for i=1:size(trans_projections,3)
+    projections(:,:,i)=imtranslate(trans_projections(:,:,i),trans_error_true(i,:)*-1);
+end
+fprintf('Done\n');
+
+
 %% Setting config parameter 
 
 fprintf('Setting config parameter..\n');
@@ -178,7 +184,7 @@ config.rots_true=rots_true; % For finding Final error in Reconstruction
 config.angles_true=angles_true; % For finding Final error in Reconstruction
 config.trans_projections=trans_projections; % used in Optimation method
 config.trans_error_true=trans_error_true;
-config.transSearchOffset=2; % Its +/- 5 pixel in both x and y
+config.transSearchOffset=2; % Its +/- 5 pixel in both x and y NOTE: USED WITH ALGO_1
 config.timestamp=timestamp;
 config.isGpu=true;
 config.checkpointing=true; % Used of repeatitive computation on same dataset 
@@ -202,7 +208,7 @@ error=findL2Error(projections,p_est)
 %}
 %% Reconstruct
 gpuDevice(1);
-[G_final,f_final,R_est,corr_error,G_init,f_init,R_init,cl_error,iteration] = solve3dObj(config);
+[G_final,f_final,R_est,corr_error,trans_error_est,G_init,f_init,R_init,cl_error,iteration] = solve3dObj(config);
 
 initL2Error=findL2Error(em,f_init);
 initCorr=corr3(em,f_init);
@@ -238,6 +244,7 @@ result=struct;
 result.G_final=G_final;
 result.f_final=f_final;
 result.R_est=R_est;
+result.trans_error_est=trans_error_est;
 result.corr_error=corr_error;
 result.G_init=G_init;
 result.f_init=f_init;
