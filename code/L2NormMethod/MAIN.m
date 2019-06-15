@@ -27,8 +27,8 @@ addpath(genpath('../../lib/BM3D'));
 
 
 %% Config 1: File Path
-dataNum = 8647
-maxNumProj=500;
+dataNum = 4138
+maxNumProj=100;
 downspample=1;
 rmvNoise=false ;
 noiseRmvMethod=2; % 1: Wiener method 2: BM3D method
@@ -43,7 +43,7 @@ timestamp=datestr(now,'dd-mm-yyyy-HH_MM_SS');
 emBasepath=strcat(basepath,'/',num2str(dataNum),suffix);
 
 %parentPath=strcat(emBasepath,'/Projection_',num2str(dataNum),'_Crp86_GaussainNoise_percent_10');
-parentPath=strcat(emBasepath,'/Projection_',num2str(dataNum),'_Td2_GaussainNoise_percent_10');
+parentPath=strcat(emBasepath,'/Projection_',num2str(dataNum),'_Crp86');
 
 parentImgDir=strcat(parentPath,'/img');
 parentRawImgDir=strcat(parentPath,'/raw_img');

@@ -17,7 +17,7 @@ end
 
 % EM-8647 - downsample by 2 
 %dirpath=strcat(basepath,'/8647/Projection_8647_Td2_GaussainNoise_percent_100/Result/rmvNoise_BM3D_proj502_soff10_iter20');
-dirpath=strcat(basepath,'/8647/Projection_8647_Td2_trans_error5/Result_Translation/proj100_onlyMyAlgo_rs10_ts2_iter10');
+dirpath=strcat(basepath,'/8647/Projection_8647_Td2_trans_error5/Result_Translation/proj100_Algo2_soff10_iter10');
 
 % EM-1050 - crop by 2 
 %dirpath=strcat(basepath,'/1050/Projection_1050_TCrp20_GaussainNoise_percent_10/Result/proj500_soff10_iter_30');

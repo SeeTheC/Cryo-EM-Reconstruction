@@ -5,7 +5,6 @@ addpath(genpath('../../lib/3dviewer'));
 addpath(genpath('../MapFileReader/'));
 addpath(genpath('../FileOperation'));
 addpath(genpath('../CommonFunctions'));
-rng(1);
 server = 1
 if server
     basepath='~/git/Cryp-EM/Cryo-EM-Reconstruction/code/data';
@@ -17,15 +16,15 @@ cd('../../lib/CERN-TIGRE/MATLAB');
 funInitTIGRE();
 cd(callPath); 
 %% Config 1: File Path
-dataNum = 8647;
+dataNum = 4138;
 maxNumProj=1005;
 downspample=1;
-noisePercent=100;
+noisePercent=10;
 
 timestamp=datestr(now,'dd-mm-yyyy-HH_MM_SS');
 emBasepath=strcat(basepath,'/',num2str(dataNum));
 
-suffix='_Td2_trans_error5';
+suffix='_Crp86_trans_error10';
 parentPath=strcat(emBasepath,'/Projection_',num2str(dataNum),suffix);
 parentImgDir=strcat(parentPath,'/img');
 parentRawImgDir=strcat(parentPath,'/raw_img');

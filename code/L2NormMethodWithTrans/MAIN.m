@@ -27,10 +27,10 @@ addpath(genpath('../../lib/BM3D'));
 
 
 %% Config 1: File Path
-dataNum = 8647
-maxNumProj=100;
+dataNum = 4138
+maxNumProj=502;
 downspample=1;
-rmvNoise=false;
+rmvNoise=true;
 noiseRmvMethod=2; % 1: Wiener method 2: BM3D method
 
 %% Initiatation of working director 
@@ -42,7 +42,7 @@ emBasepath=strcat(basepath,'/',num2str(dataNum),suffix);
 
 
 %parentPath=strcat(emBasepath,'/Projection_',num2str(dataNum),'_Crp86_GaussainNoise_percent_50');
-parentPath=strcat(emBasepath,'/Projection_',num2str(dataNum),'_Td2_trans_error5'); 
+parentPath=strcat(emBasepath,'/Projection_',num2str(dataNum),'_Crp86_trans_error10'); 
 parentImgDir=strcat(parentPath,'/img'); 
 parentRawImgDir=strcat(parentPath,'/raw_img');
 
@@ -176,7 +176,7 @@ config.dataNum=dataNum;
 config.maxNumProj=maxNumProj;
 config.downspample=downspample;
 config.parentPath=parentPath;
-config.maxIteration=10;
+config.maxIteration=20;
 config.searchOffest=10; % In degree example: +/- 10 deg 
 config.savepath=savepath;
 config.projections=projections;
@@ -244,6 +244,7 @@ result=struct;
 result.G_final=G_final;
 result.f_final=f_final;
 result.R_est=R_est;
+result.trans_error_true=trans_error_true;
 result.trans_error_est=trans_error_est;
 result.corr_error=corr_error;
 result.G_init=G_init;
