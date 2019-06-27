@@ -42,7 +42,7 @@ emBasepath=strcat(basepath,'/',num2str(dataNum),suffix);
 
 
 %parentPath=strcat(emBasepath,'/Projection_',num2str(dataNum),'_Crp86_GaussainNoise_percent_50');
-parentPath=strcat(emBasepath,'/Projection_',num2str(dataNum),'_Crp86_trans_error10'); 
+parentPath=strcat(emBasepath,'/Projection_',num2str(dataNum),'_Crp86_trans_error10_GaussainNoise_percent_10'); 
 parentImgDir=strcat(parentPath,'/img'); 
 parentRawImgDir=strcat(parentPath,'/raw_img');
 
@@ -176,7 +176,7 @@ config.dataNum=dataNum;
 config.maxNumProj=maxNumProj;
 config.downspample=downspample;
 config.parentPath=parentPath;
-config.maxIteration=20;
+config.maxIteration=10;
 config.searchOffest=10; % In degree example: +/- 10 deg 
 config.savepath=savepath;
 config.projections=projections;
