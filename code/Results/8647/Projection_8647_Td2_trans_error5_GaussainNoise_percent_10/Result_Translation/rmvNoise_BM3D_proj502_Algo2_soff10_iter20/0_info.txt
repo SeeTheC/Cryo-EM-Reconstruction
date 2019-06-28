@@ -1,0 +1,35 @@
+No. of Projection: 502
+Percentage of correct common lines: 41.180566 
+********* Algo 2: Cross Fourier Spectrum************
+Initial Correlation:0.980614
+Rotation Search offset:10.000000
+14-06-2019 11:58:07	Optimization started 
+14-06-2019 13:23:53	iter:1	prevCorr:0.980614	CurCorr:0.994726	changeCount:501
+14-06-2019 14:49:35	iter:2	prevCorr:0.994726	CurCorr:0.995728	changeCount:350
+14-06-2019 16:15:18	iter:3	prevCorr:0.995728	CurCorr:0.995804	changeCount:125
+14-06-2019 17:41:04	iter:4	prevCorr:0.995804	CurCorr:0.995821	changeCount:53
+14-06-2019 19:06:50	iter:5	prevCorr:0.995821	CurCorr:0.995823	changeCount:27
+14-06-2019 20:32:41	iter:6	prevCorr:0.995823	CurCorr:0.995826	changeCount:18
+14-06-2019 21:58:29	iter:7	prevCorr:0.995826	CurCorr:0.995825	changeCount:20
+14-06-2019 23:24:16	iter:8	prevCorr:0.995825	CurCorr:0.995828	changeCount:13
+15-06-2019 00:50:12	iter:9	prevCorr:0.995828	CurCorr:0.995828	changeCount:7
+15-06-2019 02:16:09	iter:10	prevCorr:0.995828	CurCorr:0.995828	changeCount:0
+
+----------------[Final Result]---------------------]iteration:10.000000
+Projection corr_error:0.995828
+Projection cl_error:0.411806
+3D obj Intial Estimate L2 Error:0.009538
+3D obj Intial Estimate Correaltion:0.839210
+3D obj Final Estimate L2 Error:0.009213
+3D obj Final Estimate Correaltion:0.919888
+
+3D obj Intial Estimate Relative MSE :0.986850
+3D obj Final Estimate Relative MSE :0.953236
+3D obj Intial Estimate Relative MSE (tnorm) :0.986850
+3D obj Final Estimate Relative MSE (tnorm):0.953236
+
+Initial  Rotation aCos error (r1,r2,r3): 5.563144,5.302262,6.099738
+Estimate Rotation aCos error (r1,r2,r3): 0.395875,0.447099,0.000891
+
+Estimate  Mean Translation error in pixel (x,y): 0.000000,0.000000
+Estimate Std Translation error in pixel (x,y): 0.000000,0.000000

@@ -1,0 +1,25 @@
+No. of Projection: 500
+Percentage of correct common lines: 40.244099 
+********* Algo 2: Cross Fourier Spectrum************
+Initial Correlation:0.974862
+Rotation Search offset:10.000000
+14-06-2019 23:16:30	Optimization started 
+15-06-2019 00:54:14	iter:1	prevCorr:0.974862	CurCorr:0.989697	changeCount:497
+15-06-2019 02:32:31	iter:2	prevCorr:0.989697	CurCorr:0.990811	changeCount:334
+15-06-2019 04:11:00	iter:3	prevCorr:0.990811	CurCorr:0.990915	changeCount:117
+15-06-2019 05:49:42	iter:4	prevCorr:0.990915	CurCorr:0.990931	changeCount:40
+15-06-2019 07:22:16	iter:5	prevCorr:0.990931	CurCorr:0.990936	changeCount:20
+15-06-2019 08:46:04	iter:6	prevCorr:0.990936	CurCorr:0.990940	changeCount:8
+15-06-2019 10:25:04	iter:7	prevCorr:0.990940	CurCorr:0.990939	changeCount:3
+15-06-2019 12:08:25	iter:8	prevCorr:0.990939	CurCorr:0.990939	changeCount:1
+15-06-2019 13:52:09	iter:9	prevCorr:0.990939	CurCorr:0.990938	changeCount:2
+15-06-2019 15:34:29	iter:10	prevCorr:0.990938	CurCorr:0.990938	changeCount:3
+15-06-2019 17:07:47	iter:11	prevCorr:0.990938	CurCorr:0.990938	changeCount:0
+
+----------------[Final Result]---------------------]iteration:11.000000
+Projection corr_error:0.990938
+Projection cl_error:0.402441
+3D obj Intial Estimate L2 Error:0.009614
+3D obj Intial Estimate Correaltion:0.841882
+3D obj Final Estimate L2 Error:0.009268
+3D obj Final Estimate Correaltion:0.932338
