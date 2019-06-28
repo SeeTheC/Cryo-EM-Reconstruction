@@ -1,0 +1,19 @@
+No. of Projection: 100
+Percentage of correct common lines: 8.928933 
+Initial Correlation:0.868598
+Search offset:10.000000
+18-04-2019 20:26:28	Optimization started 
+18-04-2019 20:40:11	iter:1	prevCorr:0.868598	CurCorr:0.868614	changeCount:1
+18-04-2019 20:53:54	iter:2	prevCorr:0.868614	CurCorr:0.868630	changeCount:1
+18-04-2019 21:07:37	iter:3	prevCorr:0.868630	CurCorr:0.868651	changeCount:1
+18-04-2019 21:21:20	iter:4	prevCorr:0.868651	CurCorr:0.868670	changeCount:1
+18-04-2019 21:35:03	iter:5	prevCorr:0.868670	CurCorr:0.868670	changeCount:0
+
+----------------[Final Result]---------------------]
+iteration:5.000000
+Projection corr_error:0.868670
+Projection cl_error:0.089289
+3D obj Intial Estimate L2 Error:0.019072
+3D obj Intial Estimate Correaltion:0.521778
+3D obj Final Estimate L2 Error:0.019072
+3D obj Final Estimate Correaltion:0.521811

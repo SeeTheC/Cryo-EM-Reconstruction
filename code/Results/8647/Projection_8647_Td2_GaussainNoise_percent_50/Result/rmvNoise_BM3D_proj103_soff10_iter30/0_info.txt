@@ -1,0 +1,33 @@
+No. of Projection: 103
+Percentage of correct common lines: 13.349933 
+Initial Correlation:0.970957
+Search offset:10.000000
+20-04-2019 15:10:54	Optimization started 
+20-04-2019 15:25:02	iter:1	prevCorr:0.970957	CurCorr:0.982056	changeCount:103
+20-04-2019 15:39:06	iter:2	prevCorr:0.982056	CurCorr:0.985809	changeCount:100
+20-04-2019 15:53:10	iter:3	prevCorr:0.985809	CurCorr:0.987132	changeCount:85
+20-04-2019 16:07:15	iter:4	prevCorr:0.987132	CurCorr:0.987423	changeCount:59
+20-04-2019 16:21:20	iter:5	prevCorr:0.987423	CurCorr:0.987402	changeCount:43
+20-04-2019 16:35:26	iter:6	prevCorr:0.987402	CurCorr:0.987302	changeCount:28
+20-04-2019 16:49:31	iter:7	prevCorr:0.987302	CurCorr:0.987233	changeCount:20
+20-04-2019 17:03:37	iter:8	prevCorr:0.987233	CurCorr:0.987173	changeCount:17
+20-04-2019 17:17:43	iter:9	prevCorr:0.987173	CurCorr:0.987108	changeCount:9
+20-04-2019 17:31:48	iter:10	prevCorr:0.987108	CurCorr:0.987077	changeCount:6
+20-04-2019 17:45:54	iter:11	prevCorr:0.987077	CurCorr:0.987035	changeCount:4
+20-04-2019 18:00:01	iter:12	prevCorr:0.987035	CurCorr:0.987057	changeCount:4
+20-04-2019 18:14:06	iter:13	prevCorr:0.987057	CurCorr:0.987045	changeCount:5
+20-04-2019 18:28:13	iter:14	prevCorr:0.987045	CurCorr:0.987018	changeCount:6
+20-04-2019 18:42:20	iter:15	prevCorr:0.987018	CurCorr:0.986966	changeCount:8
+20-04-2019 18:56:27	iter:16	prevCorr:0.986966	CurCorr:0.986941	changeCount:5
+20-04-2019 19:10:34	iter:17	prevCorr:0.986941	CurCorr:0.986921	changeCount:4
+20-04-2019 19:24:38	iter:18	prevCorr:0.986921	CurCorr:0.986935	changeCount:2
+20-04-2019 19:38:45	iter:19	prevCorr:0.986935	CurCorr:0.986935	changeCount:0
+
+----------------[Final Result]---------------------]
+iteration:19.000000
+Projection corr_error:0.986935
+Projection cl_error:0.133499
+3D obj Intial Estimate L2 Error:0.010438
+3D obj Intial Estimate Correaltion:0.744627
+3D obj Final Estimate L2 Error:0.010101
+3D obj Final Estimate Correaltion:0.817154

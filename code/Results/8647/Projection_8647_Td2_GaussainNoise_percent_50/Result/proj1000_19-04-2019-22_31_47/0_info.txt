@@ -1,0 +1,11 @@
+No. of Projection: 1000
+Percentage of correct common lines: 8.245308 
+Initial Correlation:0.852714
+Search offset:10.000000
+19-04-2019 22:56:20	Optimization started 
+20-04-2019 01:14:32	iter:1	prevCorr:0.852714	CurCorr:0.866881	changeCount:911
+20-04-2019 03:32:44	iter:2	prevCorr:0.866881	CurCorr:0.870233	changeCount:548
+20-04-2019 05:51:04	iter:3	prevCorr:0.870233	CurCorr:0.871053	changeCount:310
+20-04-2019 08:09:27	iter:4	prevCorr:0.871053	CurCorr:0.871322	changeCount:147
+20-04-2019 10:28:01	iter:5	prevCorr:0.871322	CurCorr:0.871449	changeCount:76
+20-04-2019 12:46:34	iter:6	prevCorr:0.871449	CurCorr:0.871491	changeCount:53
