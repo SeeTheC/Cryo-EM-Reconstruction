@@ -1,0 +1,3 @@
+Percentage of correct common lines: 44.992891 
+26-04-2019 21:24:13	Optimization started 
+27-04-2019 17:33:04	iter:1	prevCorr:5804523746492416.000000	CurCorr:3374618618363904.000000	changeCount:100
