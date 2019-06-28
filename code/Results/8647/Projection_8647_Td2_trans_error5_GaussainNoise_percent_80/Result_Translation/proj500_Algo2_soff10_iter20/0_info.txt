@@ -1,0 +1,35 @@
+No. of Projection: 500
+Percentage of correct common lines: 2.909126 
+********* Algo 2: Cross Fourier Spectrum************
+Initial Correlation:0.737081
+Rotation Search offset:10.000000
+10-06-2019 23:53:52	Optimization started 
+11-06-2019 01:17:18	iter:1	prevCorr:0.737081	CurCorr:0.740807	changeCount:81
+11-06-2019 02:40:44	iter:2	prevCorr:0.740807	CurCorr:0.742954	changeCount:57
+11-06-2019 04:04:15	iter:3	prevCorr:0.742954	CurCorr:0.743765	changeCount:33
+11-06-2019 05:27:51	iter:4	prevCorr:0.743765	CurCorr:0.744264	changeCount:25
+11-06-2019 06:51:33	iter:5	prevCorr:0.744264	CurCorr:0.744812	changeCount:23
+11-06-2019 08:15:18	iter:6	prevCorr:0.744812	CurCorr:0.745092	changeCount:18
+11-06-2019 09:39:07	iter:7	prevCorr:0.745092	CurCorr:0.745270	changeCount:15
+11-06-2019 11:02:59	iter:8	prevCorr:0.745270	CurCorr:0.745355	changeCount:10
+11-06-2019 12:26:57	iter:9	prevCorr:0.745355	CurCorr:0.745476	changeCount:12
+11-06-2019 13:51:00	iter:10	prevCorr:0.745476	CurCorr:0.745525	changeCount:11
+11-06-2019 15:15:07	iter:11	prevCorr:0.745525	CurCorr:0.745620	changeCount:10
+11-06-2019 16:39:19	iter:12	prevCorr:0.745620	CurCorr:0.745632	changeCount:7
+11-06-2019 18:03:34	iter:13	prevCorr:0.745632	CurCorr:0.745644	changeCount:6
+11-06-2019 19:27:52	iter:14	prevCorr:0.745644	CurCorr:0.745650	changeCount:4
+11-06-2019 20:52:14	iter:15	prevCorr:0.745650	CurCorr:0.745653	changeCount:4
+11-06-2019 22:16:37	iter:16	prevCorr:0.745653	CurCorr:0.745654	changeCount:3
+11-06-2019 23:41:08	iter:17	prevCorr:0.745654	CurCorr:0.745656	changeCount:3
+12-06-2019 01:05:41	iter:18	prevCorr:0.745656	CurCorr:0.745658	changeCount:3
+12-06-2019 02:30:16	iter:19	prevCorr:0.745658	CurCorr:0.745660	changeCount:3
+12-06-2019 03:54:57	iter:20	prevCorr:0.745660	CurCorr:0.745663	changeCount:3
+
+----------------[Final Result]---------------------]
+iteration:20.000000
+Projection corr_error:0.745663
+Projection cl_error:0.029091
+3D obj Intial Estimate L2 Error:0.014716
+3D obj Intial Estimate Correaltion:0.605787
+3D obj Final Estimate L2 Error:0.014726
+3D obj Final Estimate Correaltion:0.639983
