@@ -1,0 +1,9 @@
+Percentage of correct common lines: 44.992891 
+24-04-2019 23:48:21	Optimization started 
+25-04-2019 00:17:34	iter:1	prevCorr:3198217.250000	CurCorr:2726885.250000	changeCount:100
+25-04-2019 00:46:11	iter:2	prevCorr:2726885.250000	CurCorr:2266626.500000	changeCount:100
+25-04-2019 01:24:56	iter:3	prevCorr:2266626.500000	CurCorr:1941607.125000	changeCount:100
+25-04-2019 02:11:42	iter:4	prevCorr:1941607.125000	CurCorr:1895693.750000	changeCount:100
+25-04-2019 03:00:14	iter:5	prevCorr:1895693.750000	CurCorr:1662509.000000	changeCount:99
+25-04-2019 03:48:49	iter:6	prevCorr:1662509.000000	CurCorr:1629418.750000	changeCount:100
+25-04-2019 04:37:26	iter:7	prevCorr:1629418.750000	CurCorr:1544752.250000	changeCount:100
