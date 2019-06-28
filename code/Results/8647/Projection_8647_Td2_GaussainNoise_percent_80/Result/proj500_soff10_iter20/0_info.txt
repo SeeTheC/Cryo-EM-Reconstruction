@@ -1,0 +1,39 @@
+No. of Projection: 500
+Percentage of correct common lines: 2.769431 
+Initial Correlation:0.725986
+Search offset:10.000000
+27-04-2019 00:28:31	Optimization started 
+27-04-2019 01:43:51	iter:1	prevCorr:0.725986	CurCorr:0.729944	changeCount:83
+27-04-2019 02:58:47	iter:2	prevCorr:0.729944	CurCorr:0.731360	changeCount:49
+27-04-2019 04:13:57	iter:3	prevCorr:0.731360	CurCorr:0.732347	changeCount:37
+27-04-2019 05:29:02	iter:4	prevCorr:0.732347	CurCorr:0.733001	changeCount:33
+27-04-2019 06:46:06	iter:5	prevCorr:0.733001	CurCorr:0.733288	changeCount:22
+27-04-2019 08:02:58	iter:6	prevCorr:0.733288	CurCorr:0.733488	changeCount:17
+27-04-2019 09:19:42	iter:7	prevCorr:0.733488	CurCorr:0.733615	changeCount:16
+27-04-2019 10:36:55	iter:8	prevCorr:0.733615	CurCorr:0.733708	changeCount:12
+27-04-2019 11:54:01	iter:9	prevCorr:0.733708	CurCorr:0.733766	changeCount:9
+27-04-2019 13:10:52	iter:10	prevCorr:0.733766	CurCorr:0.733805	changeCount:6
+27-04-2019 14:28:11	iter:11	prevCorr:0.733805	CurCorr:0.733856	changeCount:7
+27-04-2019 15:44:55	iter:12	prevCorr:0.733856	CurCorr:0.733861	changeCount:6
+27-04-2019 17:02:17	iter:13	prevCorr:0.733861	CurCorr:0.733920	changeCount:6
+27-04-2019 18:19:22	iter:14	prevCorr:0.733920	CurCorr:0.734048	changeCount:8
+27-04-2019 19:36:05	iter:15	prevCorr:0.734048	CurCorr:0.734128	changeCount:5
+27-04-2019 20:52:37	iter:16	prevCorr:0.734128	CurCorr:0.734169	changeCount:4
+27-04-2019 22:09:22	iter:17	prevCorr:0.734169	CurCorr:0.734171	changeCount:2
+27-04-2019 23:24:48	iter:18	prevCorr:0.734171	CurCorr:0.734172	changeCount:1
+28-04-2019 00:40:34	iter:19	prevCorr:0.734172	CurCorr:0.734173	changeCount:1
+28-04-2019 01:56:37	iter:20	prevCorr:0.734173	CurCorr:0.734174	changeCount:1
+
+----------------[Final Result]---------------------]
+iteration:20.000000
+Projection corr_error:0.734174
+Projection cl_error:0.027694
+3D obj Intial Estimate L2 Error:0.014887
+3D obj Intial Estimate Correaltion:0.593343
+3D obj Final Estimate L2 Error:0.014881
+3D obj Final Estimate Correaltion:0.625138
+
+3D obj Intial Estimate Relative MSE :1.540280
+3D obj Final Estimate Relative MSE :1.539647
+3D obj Intial Estimate Relative MSE (tnorm) :1.540280
+3D obj Final Estimate Relative MSE (tnorm):1.539647

@@ -1,0 +1,52 @@
+No. of Projection: 502
+Percentage of correct common lines: 2.444913 
+Initial Correlation:0.960356
+Search offset:10.000000
+27-04-2019 01:36:08	Optimization started 
+27-04-2019 02:52:08	iter:1	prevCorr:0.960356	CurCorr:0.973191	changeCount:502
+27-04-2019 04:07:56	iter:2	prevCorr:0.973191	CurCorr:0.978908	changeCount:493
+27-04-2019 05:23:42	iter:3	prevCorr:0.978908	CurCorr:0.981268	changeCount:448
+27-04-2019 06:39:43	iter:4	prevCorr:0.981268	CurCorr:0.982273	changeCount:373
+27-04-2019 07:57:10	iter:5	prevCorr:0.982273	CurCorr:0.982795	changeCount:283
+27-04-2019 09:14:08	iter:6	prevCorr:0.982795	CurCorr:0.983042	changeCount:191
+27-04-2019 10:31:16	iter:7	prevCorr:0.983042	CurCorr:0.983102	changeCount:159
+27-04-2019 11:48:15	iter:8	prevCorr:0.983102	CurCorr:0.983107	changeCount:102
+27-04-2019 13:05:28	iter:9	prevCorr:0.983107	CurCorr:0.983120	changeCount:75
+27-04-2019 14:22:37	iter:10	prevCorr:0.983120	CurCorr:0.983131	changeCount:57
+27-04-2019 15:39:54	iter:11	prevCorr:0.983131	CurCorr:0.983150	changeCount:34
+27-04-2019 16:56:58	iter:12	prevCorr:0.983150	CurCorr:0.983167	changeCount:33
+27-04-2019 18:14:02	iter:13	prevCorr:0.983167	CurCorr:0.983181	changeCount:27
+27-04-2019 19:31:02	iter:14	prevCorr:0.983181	CurCorr:0.983183	changeCount:25
+27-04-2019 20:48:15	iter:15	prevCorr:0.983183	CurCorr:0.983180	changeCount:20
+27-04-2019 22:05:31	iter:16	prevCorr:0.983180	CurCorr:0.983180	changeCount:15
+27-04-2019 23:23:07	iter:17	prevCorr:0.983180	CurCorr:0.983178	changeCount:9
+28-04-2019 00:40:00	iter:18	prevCorr:0.983178	CurCorr:0.983174	changeCount:6
+28-04-2019 01:56:17	iter:19	prevCorr:0.983174	CurCorr:0.983173	changeCount:4
+28-04-2019 03:12:38	iter:20	prevCorr:0.983173	CurCorr:0.983171	changeCount:3
+
+----------------[Final Result]---------------------]
+iteration:20.000000
+Projection corr_error:0.983171
+Projection cl_error:0.024449
+3D obj Intial Estimate L2 Error:0.009837
+3D obj Intial Estimate Correaltion:0.716864
+3D obj Final Estimate L2 Error:0.009405
+3D obj Final Estimate Correaltion:0.788950
+
+3D obj Intial Estimate Relative MSE :1.017819
+3D obj Final Estimate Relative MSE :0.973089
+3D obj Intial Estimate Relative MSE (tnorm) :1.017819
+3D obj Final Estimate Relative MSE (tnorm):0.973089
+
+3D obj Intial Estimate Relative MSE :1.017819
+3D obj Final Estimate Relative MSE :0.973089
+3D obj Intial Estimate Relative MSE (tnorm) :1.017819
+3D obj Final Estimate Relative MSE (tnorm):0.973089
+
+3D obj Intial Estimate Relative MSE :1.017819
+3D obj Final Estimate Relative MSE :0.973089
+3D obj Intial Estimate Relative MSE (tnorm) :1.017819
+3D obj Final Estimate Relative MSE (tnorm):0.973089
+
+Initial  Rotation aCos error (r1,r2,r3): 17.032287,18.017217,22.298040
+Estimate Rotation aCos error (r1,r2,r3): 5.438799,9.617589,0.019159

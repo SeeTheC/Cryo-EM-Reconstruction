@@ -1,0 +1,20 @@
+No. of Projection: 100
+Percentage of correct common lines: 1.474747 
+Initial Correlation:0.714455
+Search offset:10.000000
+26-04-2019 01:25:14	Optimization started 
+26-04-2019 01:40:48	iter:1	prevCorr:0.714455	CurCorr:0.714455	changeCount:0
+
+----------------[Final Result]---------------------]
+iteration:1.000000
+Projection corr_error:0.714455
+Projection cl_error:0.014747
+3D obj Intial Estimate L2 Error:0.033066
+3D obj Intial Estimate Correaltion:0.288488
+3D obj Final Estimate L2 Error:0.033066
+3D obj Final Estimate Correaltion:0.288488
+
+3D obj Intial Estimate Relative MSE :3.421217
+3D obj Final Estimate Relative MSE :3.421217
+3D obj Intial Estimate Relative MSE (tnorm) :3.421217
+3D obj Final Estimate Relative MSE (tnorm):3.421217
